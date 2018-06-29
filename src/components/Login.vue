@@ -3,7 +3,7 @@
 		  <img src="../assets/logo.png">
 		  <div class="login-inp">
 				<div><span>姓名</span><input type="text" v-model="uname" /></div>
-				<div><span>密码</span><input type="text" v-model="upassword" /></div>
+				<div><span>密码</span><input type="password" v-model="upassword" /></div>
 			</div>
 			<div class="login-submit">
 				 <input type="button" value="注册" @click="regist"/>
@@ -57,6 +57,9 @@ export default {
 					border:1px solid #E7E7E7;
 					border-radius: 5px;
 					background-color: #FAFAFA;
+					color:#A1ACB4;
+					font-size:20px;
+					text-align: center;
 				}
 		 }	 
 	}
