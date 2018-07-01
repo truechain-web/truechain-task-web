@@ -1,9 +1,14 @@
 <template>
 	<div>
-		<list-header @change="hanleSelectTack" :taskList="taskList"></list-header>
+		<div class="space"></div>
+		<list-header @change="hanleSelectTack" :taskList="taskList" ></list-header>
+		
 		<div class="list border-bottom" ref="wrapper">
+			
 			<div >
+				<div class="space"></div>
 				<div class="item  border-bottom" v-for="item of tempTaskList">
+					
 			          <div class="left">
 			              <img :src="item.imgUrl" alt=""  class="tackImg"/>
 			              <div class="task-rank">
@@ -45,9 +50,7 @@
 		    .then(this.handleInfoSucc)
 		  },
 		  handleInfoSucc(res){
-				console.log(res)
 		    res=res.data
-				console.log(res)
 		    if(res.ret && res.data){
 		     const data=res.data
 		     this.taskList=data.taskList
@@ -55,7 +58,6 @@
 		    }
 		  },
 		  hanleSelectTack(type){
-		  	console.log(type)
 		    this.taskType=type
 		    let result=[]
 	        for(let i=0;i<this.taskList.length;i++){
@@ -87,9 +89,10 @@
 </script>
 
 <style lang="less" scoped>
+.space{background: #eee;height: 10px;}
   .list {
   	position: absolute;
-  	top: 50px;
+  	top: 60px;
   	left: 0;
   	right: 0;
   	bottom: 60px;

@@ -10,24 +10,28 @@
 			<div class="search-wrapper" v-show="!show">
 				<span class="search iconfont">&#xe741;</span>
 				<input type="text" class="search-input" v-model="keyword" />
-				<span @click="searchItem" class="cancel">取消</span>
+				<span @click="cancelSearch" class="cancel">取消</span>
 			</div>
 
 		</div>
-		<div class="search-content" v-show="keyword">
-			<div class="item" v-for="item of list">
-				<div class="left">
-					<img :src="item.imgUrl" alt="" class="tackImg" />
-					<div class="task-rank">
-						<p>{{item.name}}</p>
-						<p>难度：<span>{{item.rank}}</span></p>
-					</div>
+		<div class="search-content" v-show="keyword"  ref="wrapper">
+			<div>
+				<div class="space"></div>
+				<div class="item" v-for="item of list">
+					 <div class="left">
+				              <img :src="item.imgUrl" alt=""  class="tackImg"/>
+				              <div class="task-rank">
+				                 <p class="name">{{item.name}}</p>
+				                 <p class="rank">难度：<span>{{item.rank}}</span></p>
+				              </div>
+				          </div>
+				          <div class="center">{{item.number}}True</div>
+				          <div class="right">抢任务</div>
+	
 				</div>
-				<div class="center">{{item.number}}</div>
-				<div class="right"><button>抢</button></div>
-
 			</div>
-			<div class="search-item border-bottom " v-show="hasnoData">没有找到匹配数据</div>
+			
+			<div class="search-item" v-show="hasnoData" >没有找到匹配数据</div>
 		</div>
 		<ul class="select-wrapper" v-show="isShow">
 			<li class="border-bottom select-item" :class="{ active: active==index }" v-for="(item,index) of itemList" :key="item.id" @click="handleClick(index,item.name)">{{item.name}}</li>
@@ -40,6 +44,7 @@
 </template>
 
 <script>
+  import Bscroll from 'better-scroll'
 	export default {
 		name: "ListHeader",
 		data() {
@@ -52,7 +57,7 @@
 				timer: null,
 				list: [],
 				active:0,
-				showMask:false
+				showMask:false,
 			};
 		},
 		props: {
@@ -62,6 +67,9 @@
 			hasnoData() {
 				return !this.list.length;
 			}
+		},
+		mounted(){
+		  	this.scroll=new Bscroll(this.$refs.wrapper)
 		},
 		watch: {
 			keyword() {
@@ -78,7 +86,6 @@
 							result.push(this.taskList[i]);
 						}
 					}
-					console.log(result);
 					this.list = result;
 				}, 100);
 			}
@@ -87,6 +94,12 @@
 			searchItem() {
 				this.show = !this.show;
 				this.isShow = false;
+				
+			},
+			cancelSearch(e){
+				this.show = !this.show;
+				this.isShow = false;
+				this.keyword=''
 			},
 			handleClick(index,name) {
 				this.active=index
@@ -167,7 +180,7 @@
 <style lang="less" scoped>
 	.header {
 		position: fixed;
-		top: 0;
+		top: 10px;
 		left: 0;
 		right: 0;
 		height: 50px;
@@ -251,37 +264,58 @@
 		bottom: 60px;
 		top:50px;
 		z-index: 1;
-		overflow-y: scroll;
+		overflow:hidden;
+		.space{background: #eee;height: 10px;}
 		.search-item{
-		 font-size: 12px;	
-		 padding-left: 20px;
+		 font-size: 14px;	
+		 padding: 10px 20px;
+		 
 		}
-		.item{
-			display: flex;
-			justify-content: left;
-			align-items: center;
-			padding: 10px 15px;
-		   .left{
-				.task-rank{
-					display: inline-block;
-				}
-				.tackImg {
-					width: 50px;
-					height: 50px;
-				}
-			}
-			.center {
-				flex: 1;
-			}
-			.right {
-				/*width: 1.2rem*/
-			}
-		}
+		  	.item {
+  		display: flex;
+  		justify-content: left;
+  		align-items: center;
+  		padding: 10px 15px;
+		
+  		.left {
+  			.task-rank {
+  				display: inline-block;
+  				margin-left: 10px;
+  				max-width: 140px;
+  				.name {
+  					font-size: 17px;
+  					color: #2E353B;
+  				}
+  				.rank {
+  					font-size: 13px;
+  					color: #A1ACB4;
+  				}
+  			}
+  			.tackImg {
+  				width: 50px;
+  				height: 50px;
+  				vertical-align: top;
+  			}
+  		}
+  		.center {
+  			flex: 1;
+  			color: #FC8936;
+  			font-size: 13px;
+  			margin-left: 10px;
+  		}
+  		.right {
+  			padding: 9px 12px;
+  			background: #FFAE0F;
+  			color: #fff;
+  			font-size: 13px;
+  			border-radius: 5px;
+  		}
+  	}
 	}
 	.mask{
 		position: absolute;
 		left: 0;
-		top: 0;
+		top: 10px;
 		right: 0;
 		bottom: 0;
 		background: #000;

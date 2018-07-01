@@ -32,7 +32,7 @@
 
 <script>
 	export default {
-		name: 'Tab'
+		name: 'Tabs'
 	}
 </script>
 

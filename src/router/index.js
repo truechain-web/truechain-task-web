@@ -6,6 +6,7 @@ import OptionDetail from "@/components/OptionDetail"
 import List from '@/components/list/List'
 import Task from '@/components/task/Task'
 import Mine from '@/components/mine/Mine'
+import Recommend from '@/components/mine/Recommend'
 Vue.use(Router)
 
 export default new Router({
@@ -39,6 +40,12 @@ export default new Router({
       path: '/mine',
       name: 'Mine',
       component: Mine
-    }
+    },
+    {
+      path: '/recommend',
+      name: 'Recommend',
+      component: Recommend
+    },
+    
   ]
 })
