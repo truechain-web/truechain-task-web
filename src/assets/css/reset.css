@@ -37,4 +37,4 @@ s,i,em
 .col-red
     {color: #C81623!important;}
 /*点击去除阴影*/
-*{-webkit-tap-highlight-color: rgba(0,0,0,0);-webkit-tap-highlight-color:transparent;}
+*{-webkit-tap-highlight-color:transparent;}
