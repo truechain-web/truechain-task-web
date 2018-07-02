@@ -24,16 +24,21 @@
         <p class="name">{{item.name}}</p>
       </li>
     </ul>
-    <div class="space"></div>
+  
 
-    <div class="tabCon">
-      <div class="tabConWrapper border-bottom" v-for='(itemCon,index) in tempContents' v-show=" index == num">
+    <div class="tabCon" ref="wrapper">
+      
+      <div >
+         <div class="space"></div>
+      	  <div class="tabConWrapper border-bottom" v-for='(itemCon,index) in tabContents[tabIndex]' >
         <div class="contLeft">
           <p class="type">{{itemCon.type}}</p>
           <p class="date">{{itemCon.date}}</p>
         </div>
         <div class="contRight">+{{itemCon.number}}</div>
       </div>
+      </div>
+     
     </div>
     <tabs></tabs>
   </div>
@@ -42,6 +47,8 @@
 <script>
   import Tabs from '../tab/Tab'
   import axios from 'axios'
+  import Bscroll from 'better-scroll'
+  
   export default {
     name: "Mine",
     components: {
@@ -50,7 +57,7 @@
 
     methods: {
       tabs(index) {
-        this.num = index
+        this.tabIndex = index
         this.active = index
       },
       getIncomeInfo() {
@@ -61,8 +68,22 @@
         res = res.data
         if(res.ret && res.data) {
           const data = res.data
-          this.tabContents = data.incomeList
-
+          var trueList=[]
+          var ttrList=[]
+          var bagList=[]
+          data.incomeList.forEach(function(list){
+            if(list.type=='true奖励'){
+              trueList.push(list)
+            }
+            if(list.type=='ttr奖励'){
+              ttrList.push(list)
+            }
+            if(list.type=='红包奖励'){
+              bagList.push(list)
+            }
+          })
+          var allIncomeList=[trueList,ttrList,bagList]
+          this.tabContents=allIncomeList
         }
 
       },
@@ -84,7 +105,7 @@
         tabContents: [],
         tempContents: [],
         active: 0,
-        num: 0,
+        tabIndex:0,
         navs: [{
             id: '1',
             num: '1200',
@@ -104,35 +125,16 @@
             type: '红包奖励'
           }
         ],
-        tempContents: [{
-            "id": "0001",
-            "name": "任务收入",
-            "number": "200",
-            "type": "true奖励",
-            "date": "2018-02-12"
-          },
-          {
-            "id": "0002",
-            "name": "任务收入",
-            "number": "500",
-            "type": "ttr奖励",
-            "date": "2018-06-12"
-          },
-          {
-            "id": "0003",
-            "name": "任务收入",
-            "number": "1200",
-            "type": "红包奖励",
-            "date": "2018-04-12"
-          }
-        ]
+        tabContents: []
       }
 
     },
-
+ 
     mounted() {
       this.getIncomeInfo()
+      this.scroll = new Bscroll(this.$refs.wrapper)
     }
+
 
   }
 </script>
@@ -144,10 +146,17 @@
   }
   
   .tabCon {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 60px;
+    top: 184px;
+    overflow: hidden;
     .tabConWrapper {
       display: flex;
       padding: 0 15px;
       height: 60px;
+      
       align-items: center;
       .contLeft {
         flex: 1;
@@ -230,6 +239,10 @@
     height: 76px;
     display: flex;
     text-align: center;
+    position: fixed;
+    left: 0;
+    right: 0;
+    background: #fff;
     .item {
       flex: 1;
       .num {
