@@ -217,6 +217,7 @@
       .search-input {
         flex: 1;
         background: #eee;
+        border-radius: 0;
         border-top-right-radius: 20px;
         border-bottom-right-radius: 20px;
       }
