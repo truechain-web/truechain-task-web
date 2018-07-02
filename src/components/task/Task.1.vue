@@ -7,12 +7,10 @@
         {{item.name}}
       </li>
     </ul>
-   
+    <div class="space"></div>
     
     <div class="list border-bottom" ref="wrapper">
-       <div>
-       <div class="space"></div>
-     
+      <div>
         <div class="item  border-bottom" v-for="(item,index) of TaskList[tabIndex]" >
           <div class="left">
             <img :src="item.imgUrl" alt="" class="tackImg" />
@@ -39,10 +37,76 @@
       Tabs,
     },
     data() {
+     
+      var taskLists= [
+        {
+      "id": "0001",
+      "name": "任务1",
+      "rank": "A级",
+      "status": "进行中",
+      "type": "个人",
+      "imgUrl": "http://img1.qunarzz.com/piao/fusion/1710/a6/83f636bd75ae6302.png"
+    },
+    {
+      "id": "0002",
+      "rank": "B级",
+      "name": "任务2",
+      "status": "进行中",
+      "type": "个人",
+      "imgUrl": "http://oz3tayfme.bkt.clouddn.com/show.liluo.cc/2018011022292984819.png"
+    },
+    {
+      "id": "0003",
+      "rank": "C级",
+      "name": "任务3",
+      "status": "已完成",
+      "type": "团队",
+      "imgUrl": "http://static.galileo.xiaojukeji.com/static/tms/seller_avatar_256px.jpg"
+    },
+     {
+      "id": "0002",
+      "rank": "B级",
+      "name": "任务2",
+      "status": "进行中",
+      "type": "个人",
+      "imgUrl": "http://oz3tayfme.bkt.clouddn.com/show.liluo.cc/2018011022292984819.png"
+    },
+    {
+      "id": "0003",
+      "rank": "C级",
+      "name": "任务3",
+      "status": "已完成",
+      "type": "团队",
+      "imgUrl": "http://static.galileo.xiaojukeji.com/static/tms/seller_avatar_256px.jpg"
+    }
+      ];
+   //所有任务 
+   var allTask = [];
+   //进行中
+   var tasking = [];
+   //已完成
+   var finishTask = [];
+  
+ 
+   //把所有不同状态的通过if判断push到相对应的任务状态集合中。
+   taskLists.forEach(function(task){
+    if(task.status == '已完成'||task.status == '进行中'){
+     allTask.push(task);
+    };
+    if(task.status == '进行中'){
+     tasking.push(task);
+    };
+    if(task.status == '已完成'){
+     finishTask.push(task);
+    };
+   });
+   //设置一个空数组，把所有状态下的任务集合放到空数组中，从0-5的顺序按照你的自己设置的tab切换的内容0-5的顺序对应排列，
+   var taskAll = [ allTask, tasking, finishTask];
+   console.log(taskAll)
       return {
         active: 0,
         num: 0,
-        // tabIndex : 0,
+        tabIndex : 0,
         navs: [{
             id: '1',
             name: '所有任务(3)',
@@ -56,8 +120,9 @@
             name: '已完成任务(7)',
           }
         ],
-         tabIndex : 0,
-         TaskList: []
+        
+        TaskList: taskAll
+    
       }
     },
     methods: {
@@ -66,38 +131,18 @@
         this.active = index
         this.tabIndex=index
       },
-      getAllTask(){
-        axios.get('/static/mock/status.json')
-        .then(this.getAllTaskSucc)
-      },
-      getAllTaskSucc(res){
-        res=res.data
-        if(res.ret&&res.data){
-            const data=res.data
-            var allTask=[]
-            var tasking=[]
-            var  finishTask=[]
-            data.allTask.forEach(function(task){
-                if(task.status == '已完成'||task.status == '进行中'){
-                  allTask.push(task);
-                };
-                if(task.status == '进行中'){
-                  tasking.push(task);
-                };
-                if(task.status == '已完成'){
-                  finishTask.push(task);
-                };
-           });
-           var taskAll = [ allTask, tasking, finishTask]
-           this.TaskList=taskAll
-          
-        }
-           
-      }
+      // getAllTask(){
+      //   axios.get('/static/mock/status.json')
+      //   .then(this.getAllTaskSucc)
+      // },
+      // getAllTaskSucc(res){
+      //     this.TaskList=res.data.allTask
+      //      console.log(this.TaskList+222222222222)
+      // }
     },
     mounted() {
       this.scroll = new Bscroll(this.$refs.wrapper)
-      this.getAllTask()
+      //this.getAllTask()
     }
 
   }
@@ -110,12 +155,6 @@
   }
   
 .list{
-   overflow: hidden;
-   position: absolute;
-   top: 60px;
-    left: 0;
-    right: 0;
-    bottom: 60px;
     .item {
     display: flex;
     justify-content: left;
@@ -160,14 +199,8 @@
 
   
   .navBar {
-    position: fixed;
-    top: 10px;
-    left: 0;
-    right: 0;
     height: 50px;
     line-height: 50px;
-    z-index: 99;
-    background: #fff;
     display: flex;
     text-align: center;
     .item {

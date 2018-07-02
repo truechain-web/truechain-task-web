@@ -1,5 +1,7 @@
 <template>
   <div>
+    <div class="space"></div>
+    
     <div class="header">
       <div class="left">
         <img src="http://static.galileo.xiaojukeji.com/static/tms/seller_avatar_256px.jpg" alt="" class="userImg" />
