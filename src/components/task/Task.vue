@@ -22,7 +22,10 @@
             </div>
           </div>
           <div class="center">{{item.status}}</div>
-          <div class="right">详情</div>
+          <router-link to="taskDetail">
+            <div class="right" >详情</div>
+          </router-link>
+          
         </div>
       </div>
     </div>

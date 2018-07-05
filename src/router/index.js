@@ -7,6 +7,8 @@ import List from '@/components/list/List'
 import Task from '@/components/task/Task'
 import Mine from '@/components/mine/Mine'
 import Recommend from '@/components/mine/Recommend'
+import TaskDetail from '@/components/taskDetail/taskDetail'
+
 Vue.use(Router)
 
 export default new Router({
@@ -45,6 +47,10 @@ export default new Router({
       path: '/recommend',
       name: 'Recommend',
       component: Recommend
+    },{
+      path: '/taskDetail',
+      name: 'TaskDetail',
+      component: TaskDetail
     },
     
   ]

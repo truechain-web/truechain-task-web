@@ -17,7 +17,9 @@
             </div>
           </div>
           <div class="center">{{item.number}}True</div>
-          <div class="right">抢任务</div>
+          <router-link to="taskDetail">
+            <div class="right"  >抢任务</div>
+          </router-link>
         </div>
       </div>
 

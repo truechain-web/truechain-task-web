@@ -20,13 +20,15 @@
 							</div>
 							<div class="inp-file">
 								 <div class="file-uplaod">
-									   <div class="add"></div>
+									   <div class="add">
+											  <img src="../assets/img/upload_file.png" alt="">
+										 </div>
 										 <span>上传个人简历(需小于500M)</span>
 								 </div>
 								<input type="file" class="file"/>
 							</div>
 							<div class="tip">
-								 	<input type="checkbox" checked class="checkbox"/>
+								 	 <input type="checkbox"  class="checkbox" checked/>
 									 <span>我已阅读</span><span style="color:#00AAEE" @click="optiondetail">《使用说明》</span>
 							</div>
 							<input type="button" value="提交" class="submit">
@@ -168,9 +170,13 @@
 					 justify-content: center;
 					 flex-direction: column;
 					 .add{
-							width:30px;
-							height: 30px;
-							border: 1px solid gray;
+							width:20px;
+							height: 20px;
+							margin-bottom: 10px;
+							img{
+								 width:100%;
+								 height: 100%;
+							}
 					 }
 				 }
 			}
@@ -183,6 +189,7 @@
 					.checkbox{
 						width: 15px;
 						height: 15px;
+						-webkit-appearance:checkbox;
 					}
 			}
 			.submit{
@@ -193,6 +200,7 @@
 				 border-radius: 5px;
 				 height: 40px;
 				 margin-top:20px;
+				 border:1px solid #00AAEE;
 			}
 		}
 	}
