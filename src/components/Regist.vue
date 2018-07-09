@@ -6,16 +6,16 @@
 			</div>
 			<div class="form-part">
 					<form class="form">
-						  <input class="inp" type="text" placeholder="姓名">
-						  <input class="inp" type="text" placeholder="微信昵称">
+						  <input class="inp" type="text" placeholder="姓名" v-model="uname">
+						  <input class="inp" type="text" placeholder="微信昵称" v-model="wechatName">
 							<div class="inpx">
-								<input class="inpx-l" type="text" placeholder="微信号">
+								<input class="inpx-l" type="text" placeholder="微信号" v-model="wechatId">
 								<input class="inpx-r" type="button" value="获取">
 							</div>
-							<input class="inp" type="text" placeholder="钱包地址">
-							<input class="inp" type="number" placeholder="联系电话">
+							<input class="inp" type="text" placeholder="钱包地址" v-model="address">
+							<input class="inp" type="number" placeholder="联系电话" v-model="phone">
 						  <div class="inpx">
-								<input class="inpx-l" type="number" placeholder="验证码">
+								<input class="inpx-l" type="number" placeholder="验证码" v-model="code">
 								<input class="inpx-r" type="button" value="获取验证码" @click="clock" ref="clock" :style="clockStyle">
 							</div>
 							<div class="inp-file">
@@ -25,16 +25,17 @@
 										 </div>
 										 <span>上传个人简历(需小于500M)</span>
 								 </div>
-								<input type="file" class="file"/>
+								<input type="file" class="file" @change="fileSelected" id="fileToUpload"/>
 							</div>
 							<div class="tip">
 								 	 <input type="checkbox"  class="checkbox" checked/>
 									 <span>我已阅读</span><span style="color:#00AAEE" @click="optiondetail">《使用说明》</span>
 							</div>
-							<input type="button" value="提交" class="submit">
+							<input type="button" value="提交" class="submit" @click="regist">
 					</form>
 
 			</div>
+			<div class="tips" v-show="showss">审核成功进行...</div>
 	</div>
 </template>
 
@@ -46,8 +47,17 @@
 				 clockStyle:{
 						backgroundColor:"#FFAE0F",
 						border:"1px solid #FFAE0F",
-						color:"white"
-				 }
+						color:"white",	
+				 },
+				 showss:false,
+				 clocks:120,
+				 uname:"",
+				 wechatName:"",
+				 wechatId:"",
+				 address:"",
+				 phone:"",
+				 code:"",
+				 file:""
 			}
 		},
 		methods:{
@@ -58,10 +68,9 @@
 				this.$router.go(-1)
 			},
 			clock(){
-				console.log(11)
 				this.clockStyle.backgroundColor="gray";
 				this.clockStyle.border="1px solid gray";
-				var sum=10;
+				var sum=this.clocks;
 				var _this = this
 				var dom =  _this.$refs.clock
 				var times = setInterval(function(){
@@ -74,6 +83,20 @@
 					 }
 					 sum--;
 				},1000)
+			},
+			regist(){
+				 this.showss= true;
+				 var _this = this;
+				 console.log(111)
+				 setTimeout(function(){
+					 _this.showss = false
+				 },1000)
+			},
+			fileSelected(){
+				console.log(111)
+				var that = this;  
+				let files = document.getElementById('fileToUpload').files;
+				 
 			}
 		}
 	}
@@ -203,6 +226,20 @@
 				 border:1px solid #00AAEE;
 			}
 		}
+	}
+	.tips{
+		 position: absolute;
+		  background-color: #00AAEE;
+		 color:white;
+		 text-align: center;
+		 width:200px;
+		 height: 50px;
+		 line-height: 50px;
+		 left:50%;
+		 top:50%;
+		 margin-left: -100px;
+		 margin-top: -25px;
+		 border-radius: 5px;
 	}
 }
 
