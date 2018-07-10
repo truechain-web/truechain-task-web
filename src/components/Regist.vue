@@ -26,6 +26,7 @@
 										 <span>上传个人简历(需小于500M)</span>
 								 </div>
 								<input type="file" class="file" @change="fileSelected" id="fileToUpload"/>
+								<div>{{fileName}}---{{fileSize}}</div>
 							</div>
 							<div class="tip">
 								 	 <input type="checkbox"  class="checkbox" checked/>
@@ -57,6 +58,9 @@
 				 address:"",
 				 phone:"",
 				 code:"",
+				 fileName:"",
+				 fileSize:"",
+				 fileType:"",
 				 file:""
 			}
 		},
@@ -93,10 +97,26 @@
 				 },1000)
 			},
 			fileSelected(){
-				console.log(111)
-				var that = this;  
-				let files = document.getElementById('fileToUpload').files;
-				 
+				
+				this.file = document.getElementById('fileToUpload').files[0];
+				console.log(this.file)
+				if(this.file === undefined){
+						this.fileName = '';
+						this.fileSize = '';
+						this.fileType = '';
+				}else{
+						this.fileName = this.file.name;
+						//kb
+						if(this.file.size/1024<1000){
+								this.fileSize = (this.file.size/1024).toFixed(2) +"kb";
+								console.log(this.fileSize)
+						}
+						else if(this.file.size/1024>1000){
+								this.fileSize = ((this.file.size/1024)/1024).toFixed(2) +"MB";
+						}
+						this.fileType = this.file.type;
+						
+				}
 			}
 		}
 	}
