@@ -13,10 +13,10 @@
             <img :src="item.imgUrl" alt="" class="tackImg" />
             <div class="task-rank">
               <p class="name">{{item.name}}</p>
-              <p class="rank">难度：<span>{{item.rank}}</span></p>
+              <p class="rank">难度：<span>{{item.level}}</span></p>
             </div>
           </div>
-          <div class="center">{{item.number}}True</div>
+          <div class="center">{{item.rewardNum}}</div>
           <router-link to="taskDetail">
             <div class="right"  >抢任务</div>
           </router-link>
@@ -42,23 +42,40 @@
       return {
         taskType: '',
         taskList: [], //原始列表
-        tempTaskList: [] //临时列表
+        tempTaskList: [], //临时列表
+        pageIndex:1,
+        pageSize:10
       }
     },
 
     methods: {
       getTaskInfo() {
-        axios.get('/static/mock/task.json')
-          .then(this.handleInfoSucc)
+        let url = "http://www.phptrain.cn/task/unauth/getTaskPage"
+				var param = new FormData()
+				param.append("pageIndex",this.pageIndex)
+				param.append("pageSize",this.pageSize)
+        this.$http.post(url,param,{
+          headers: {
+            'Content-Type': 'multipart/form-data'
+          }
+        }).then((res)=>{
+          
+          const data=res.data.result
+          this.taskList=data.content
+          this.tempTaskList=data.content
+          console.log(data)
+        })
+//      axios.get('/static/mock/task.json')
+//        .then(this.handleInfoSucc)
       },
-      handleInfoSucc(res) {
-        res = res.data
-        if(res.ret && res.data) {
-          const data = res.data
-          this.taskList = data.taskList
-          this.tempTaskList = data.taskList
-        }
-      },
+//    handleInfoSucc(res) {
+//      res = res.data
+//      if(res.ret && res.data) {
+//        const data = res.data
+//        this.taskList = data.taskList
+//        this.tempTaskList = data.taskList
+//      }
+//    },
       hanleSelectTack(type) {
         this.taskType = type
         let result = []

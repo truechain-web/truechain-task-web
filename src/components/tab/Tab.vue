@@ -2,27 +2,21 @@
   <div>
     <footer class="footer border-top">
       <div class="item">
-        <router-link to="/List">
-          <div class="">
-            <span class="iconfont">&#xe76a;</span>
+        <router-link to="/List" tag="div" class="tab-item">
+            <span class="iconfont ">&#xe76a;</span>
             <p class="name">任务列表</p>
-          </div>
         </router-link>
       </div>
       <div class="item">
-        <router-link to="/Task">
-          <div>
+        <router-link to="/Task" tag="div" class="tab-item">
             <span class="iconfont">&#xe63f;</span>
             <p class="name">我的任务</p>
-          </div>
         </router-link>
       </div>
       <div class="item">
-        <router-link to="/Mine">
-          <div>
+        <router-link to="/Mine" tag="div" class="tab-item">
             <span class="iconfont">&#xe614;</span>
             <p class="name">个人中心</p>
-          </div>
         </router-link>
       </div>
     </footer>
@@ -50,12 +44,6 @@
       width: 33.3333%;
       text-align: center;
       padding-top: 10px;
-      .active {
-        .name,
-        .iconfont {
-          color: #02ABEE;
-        }
-      }
       .name {
         color: #A3A5A8;
         font-size: 12px;
@@ -65,5 +53,11 @@
         font-size: 22px;
       }
     }
+    .active {
+        .name,
+        .iconfont {
+          color: #02ABEE;
+        }
+      }
   }
 </style>
