@@ -1,12 +1,12 @@
 <template>
   <div class="login">
-		  <div class="top">
+		  <!-- <div class="top">
 				 <span class="denglu">登录</span>
-			</div>
+			</div> -->
 		  <div class="login-inp">
-				<div ><input type="text" class="inp" v-model="uname" placeholder="电话号码"/></div>
+				<div ><input type="text" class="inp" v-model="phone" placeholder="电话号码"/></div>
 				<div class="inpx">
-						<input class="inpx-l" type="number" placeholder="验证码" v-model="code">
+						<input class="inpx-l" type="text" placeholder="验证码" v-model="code">
 						<input class="inpx-r" type="button" value="获取验证码" @click="clock" ref="clock" :style="clockStyle">
 				</div>
 				<div class="tip">
@@ -18,6 +18,7 @@
 				 <input type="button" value="登录" class="submit" @click="login">
 				 <input type="button" value="注册" class="submit" style="background-color:#FFAE0F;border:1px solid #FFAE0F" @click="regist">
 			</div>
+			<div class="tips" v-show="showss">{{tips}}</div>
   </div>
 </template>
 
@@ -26,14 +27,16 @@ export default {
   name: 'Login',
   data () {
     return {
-			 uname:"",
+			 phone:"",
 			 code:"",
-			 clocks:120,
+			 clocks:60,
 			 clockStyle:{
 					backgroundColor:"#FFAE0F",
 					border:"1px solid #FFAE0F",
 					color:"white",	
-				}
+				},
+				 tips:"",
+				 showss:false
     }
 	},
   methods:{
@@ -41,27 +44,72 @@ export default {
 			 this.$router.push({path:"/regist"})
 		},
 		login(){
-			 console.log(this.uname,"----",this.code)
+			 let url = "http://www.phptrain.cn/unauth/account/login"
+				var param = new FormData()
+				param.append("mobile",this.phone)
+				param.append("verifyCode",this.code)
+			 this.$http.post(url,param,{
+					headers: {
+							'Content-Type': 'multipart/form-data'
+					}
+			 }).then((res)=>{
+					console.log(res)
+					if(res.data.message==="成功"){
+						 // 登录成功
+						 this.tips ="登录成功.即将跳转"
+					   this.showTips()
+					}else{
+						  	this.tips ="登录失败请重新登录"
+					      this.showTips()
+					}
+			 })			 
 		},
 		clock(){
+			  if(!this.phone){
+					this.tips ="请填写手机号"
+					this.showTips()
+					return 
+				}
 				this.clockStyle.backgroundColor="gray";
 				this.clockStyle.border="1px solid gray";
 				var sum=this.clocks;
-				var _this = this
-				var dom =  _this.$refs.clock
+				var _this = this;
+				var dom =  _this.$refs.clock;
+				// 开始发送验证码：
+				let url = 'http://www.phptrain.cn/unauth/account/verifyCode/'+this.phone
+				this.$http.get(url).then((res)=>{
+						console.log(res)
+				}).catch((err)=>{
+					console.log(err)
+				})
+				// 禁用按钮
+				var  dom = this.$refs.clock
+				dom.setAttribute("disabled","true")
 				var times = setInterval(function(){
 					 dom.value=sum +"s"
 					 if (sum === 0){
 							 dom.value="获取验证码"
 							 	_this.clockStyle.backgroundColor="#FFAE0F";
 								_this.clockStyle.border="1px solid #FFAE0F";
-						 	 clearInterval(times);
+								clearInterval(times);
+								dom.removeAttribute("disabled")
 					 }
 					 sum--;
 				},1000)
 		},
 		optiondetail(){
 			this.$router.push({path:"optiondetail"})
+		},
+		showTips(callback){
+				this.showss= true;
+				 var _this = this;
+				 console.log(111)
+				 setTimeout(function(){
+					 _this.showss = false
+					 if(callback){
+						 callback()
+					 }
+				 },1000)
 		}
 	}
 }
@@ -86,7 +134,7 @@ export default {
 	}
 	.login-inp{
 		 width:80%;
-		 margin-top: 100px;
+		 margin-top: 50px;
 		 .inp{
 				width: 100%;
 				height: 40px;
@@ -155,6 +203,20 @@ export default {
 				 margin-top:20px;
 				 border:1px solid #00AAEE;
 			}
+	}
+	.tips{
+		 position: absolute;
+		  background-color: #00AAEE;
+		 color:white;
+		 text-align: center;
+		 width:200px;
+		 height: 50px;
+		 line-height: 50px;
+		 left:50%;
+		 top:50%;
+		 margin-left: -100px;
+		 margin-top: -120px;
+		 border-radius: 5px;
 	}
 }
 

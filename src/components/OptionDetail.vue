@@ -1,15 +1,13 @@
 <template>
 		<div class="detail">
-				<div class="top">
+				<!-- <div class="top">
 						<span class="return" @click="goback"> &lt; </span>
 						<span class="zhuce">使用说明</span>
-				</div>
+				</div> -->
 				<div class="content">
 						<p>尊敬的用户，您好！</p>
 						<p>恭喜您成文XXX用胡，本网站有XX运营，恭喜您成文XXX用胡，本网站有XX运营恭喜您成文XXX用胡，本网站有XX运营恭喜您成文XXX用胡，本网站有XX运营恭喜您成文XXX用胡，本网站有XX运营恭喜您成文XXX用胡，本网站有XX运营恭喜您成文XXX用胡，本网站有XX运营恭喜您成文XXX用胡，本网站有XX运营恭喜您成文XXX用胡，本网站有XX运营恭喜您成文XXX用胡，本网站有XX运营恭喜您成文XXX用胡，本网站有XX运营</p>
 					
-						<p>恭喜您成文XXX用胡，本网站有XX运营，恭喜您成文XXX用胡，本网站有XX运营恭喜您成文XXX用胡，本网站有XX运营恭喜您成文XXX用胡，本网站有XX运营恭喜您成文XXX用胡，本网站有XX运营恭喜您成文XXX用胡，本网站有XX运营恭喜您成文XXX用胡，本网站有XX运营恭喜您成文XXX用胡，本网站有XX运营恭喜您成文XXX用胡，本网站有XX运营恭喜您成文XXX用胡，本网站有XX运营恭喜您成文XXX用胡，本网站有XX运营</p>
-						<p>恭喜您成文XXX用胡，本网站有XX运营，恭喜您成文XXX用胡，本网站有XX运营恭喜您成文XXX用胡，本网站有XX运营恭喜您成文XXX用胡，本网站有XX运营恭喜您成文XXX用胡，本网站有XX运营恭喜您成文XXX用胡，本网站有XX运营恭喜您成文XXX用胡，本网站有XX运营恭喜您成文XXX用胡，本网站有XX运营恭喜您成文XXX用胡，本网站有XX运营恭喜您成文XXX用胡，本网站有XX运营恭喜您成文XXX用胡，本网站有XX运营</p>
 						<p>恭喜您成文XXX用胡，本网站有XX运营，恭喜您成文XXX用胡，本网站有XX运营恭喜您成文XXX用胡，本网站有XX运营恭喜您成文XXX用胡，本网站有XX运营恭喜您成文XXX用胡，本网站有XX运营恭喜您成文XXX用胡，本网站有XX运营恭喜您成文XXX用胡，本网站有XX运营恭喜您成文XXX用胡，本网站有XX运营恭喜您成文XXX用胡，本网站有XX运营恭喜您成文XXX用胡，本网站有XX运营恭喜您成文XXX用胡，本网站有XX运营</p>
 							
 				</div>

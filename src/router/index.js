@@ -17,16 +17,25 @@ export default new Router({
     {
       path: '/',
       name: 'Login',
-      component: Login
+			component: Login,
+			meta:{
+				 title:"登录"
+			}
     },{
 			path: '/regist',
 			name: 'Regist',
-			component: Regist
+			component: Regist,
+			meta:{
+				title:"注册"
+		  }
 		}
 		,{
 			path: '/optiondetail',
 			name: 'OptionDetail',
-			component: OptionDetail
+			component: OptionDetail,
+			meta:{
+				title:"使用说明"
+		  }
 		},
 		{
       path: '/list',

@@ -1,32 +1,37 @@
 <template>
 	<div class="regist">
-			<div class="top">
+			<!-- <div class="top">
 				 <span class="return" @click="goback"> &lt; </span>
 				 <span class="zhuce">注册</span>
-			</div>
+			</div> -->
 			<div class="form-part">
 					<form class="form">
 						  <input class="inp" type="text" placeholder="姓名" v-model="uname">
 						  <input class="inp" type="text" placeholder="微信昵称" v-model="wechatName">
 							<div class="inpx">
 								<input class="inpx-l" type="text" placeholder="微信号" v-model="wechatId">
-								<input class="inpx-r" type="button" value="获取">
+								<input class="inpx-r" type="button" value="获取" @click="getWeChatId">
 							</div>
 							<input class="inp" type="text" placeholder="钱包地址" v-model="address">
 							<input class="inp" type="number" placeholder="联系电话" v-model="phone">
 						  <div class="inpx">
-								<input class="inpx-l" type="number" placeholder="验证码" v-model="code">
+								<input class="inpx-l" type="text" placeholder="验证码" v-model="code">
 								<input class="inpx-r" type="button" value="获取验证码" @click="clock" ref="clock" :style="clockStyle">
 							</div>
 							<div class="inp-file">
-								 <div class="file-uplaod">
+								 <div class="file-uplaod" v-if="!file">
 									   <div class="add">
 											  <img src="../assets/img/upload_file.png" alt="">
 										 </div>
 										 <span>上传个人简历(需小于500M)</span>
 								 </div>
+								 <div class="file-uplaod" v-else>
+									   <div class="add">
+											  <img src="../assets/img/file.png" alt="">
+										 </div>
+										 <span>{{fileName}}---{{fileSize}}</span>
+								 </div>
 								<input type="file" class="file" @change="fileSelected" id="fileToUpload"/>
-								<div>{{fileName}}---{{fileSize}}</div>
 							</div>
 							<div class="tip">
 								 	 <input type="checkbox"  class="checkbox" checked/>
@@ -36,7 +41,7 @@
 					</form>
 
 			</div>
-			<div class="tips" v-show="showss">审核成功进行...</div>
+			<div class="tips" v-show="showss">{{tips}}</div>
 	</div>
 </template>
 
@@ -51,7 +56,7 @@
 						color:"white",	
 				 },
 				 showss:false,
-				 clocks:120,
+				 clocks:60,
 				 uname:"",
 				 wechatName:"",
 				 wechatId:"",
@@ -61,7 +66,9 @@
 				 fileName:"",
 				 fileSize:"",
 				 fileType:"",
-				 file:""
+				 file:"",
+				 tips:"审核成功进行...",
+				 callbackcode:"7"
 			}
 		},
 		methods:{
@@ -72,29 +79,91 @@
 				this.$router.go(-1)
 			},
 			clock(){
+				if(!this.phone){
+					this.tips ="请填写手机号"
+					this.showTips()
+					return 
+				}
 				this.clockStyle.backgroundColor="gray";
 				this.clockStyle.border="1px solid gray";
 				var sum=this.clocks;
 				var _this = this
 				var dom =  _this.$refs.clock
+				let url = 'http://www.phptrain.cn/unauth/account/verifyCode/'+this.phone
+				this.$http.get(url).then((res)=>{
+						console.log(res)
+						this.callbackcode = res.data.result
+				}).catch((err)=>{
+					console.log(err)
+				})
+				// 禁用按钮
+				var  dom = this.$refs.clock
+				dom.setAttribute("disabled","true")
+
 				var times = setInterval(function(){
 					 dom.value=sum +"s"
 					 if (sum === 0){
 							 dom.value="获取验证码"
 							 	_this.clockStyle.backgroundColor="#FFAE0F";
 								_this.clockStyle.border="1px solid #FFAE0F";
-						 	 clearInterval(times);
+								clearInterval(times);
+								dom.removeAttribute("disabled")
 					 }
 					 sum--;
 				},1000)
 			},
 			regist(){
-				 this.showss= true;
-				 var _this = this;
-				 console.log(111)
-				 setTimeout(function(){
-					 _this.showss = false
-				 },1000)
+				 // 检测是否都填写完成
+				 var that = this
+				 if(this.uname && this.wechatName && this.wechatId && this.address && this.phone && this.code && this.file){
+					    if(this.code!==this.callbackcode){
+								 // 验证码错误
+								 	that.tips = "验证码错误"
+									that.showTips()
+								 return
+							}
+								var param = new FormData()
+								param.append("file",that.file)
+								param.append("name",that.wechatName)
+								param.append("wxNickName",that.wechatId)
+								param.append("wxNum",that.uname)
+								param.append("trueChainAddress",that.address)
+								param.append("mobile",that.phone)
+								param.append("verifyCode",that.code)
+								// 将内容发送到接口
+								let urls = "http://www.phptrain.cn/unauth/account/register"
+							//  let params = {
+							// 		name: that.uname,
+							// 		wxNickName: that.wechatName,
+							// 		wxNum: that.wechatId,
+							// 		trueChainAddress:that.address,
+							// 		mobile: that.phone,
+							// 		verifyCode: that.code,
+							//  }
+								that.$http.post(urls,param,{
+										headers: {
+											'Content-Type': 'multipart/form-data'
+										}
+								}).then((res)=>{
+									console.log(res)
+									if(res.data.message ==="成功"){
+											// 最后提示成功注册
+											that.tips = "注册成功,请前去登录"
+											that.showTips(()=>{
+												 that.$router.push({path:"/"})
+											})
+
+									}else{
+											that.tips = "注册失败，请重新注册"
+											that.showTips()
+									}
+								}).catch((err)=>{
+									console.log("err",err)
+								})
+				 }else{
+						this.tips = "请将内容填写完整"
+						this.showTips()
+				 }
 			},
 			fileSelected(){
 				
@@ -117,6 +186,20 @@
 						this.fileType = this.file.type;
 						
 				}
+			},
+			showTips(callback){
+				this.showss= true;
+				 var _this = this;
+				 console.log(111)
+				 setTimeout(function(){
+					 _this.showss = false
+					 if(callback){
+						 callback()
+					 }
+				 },1000)
+			},
+			getWeChatId(){
+				 // 获取微信ID
 			}
 		}
 	}
@@ -258,7 +341,7 @@
 		 left:50%;
 		 top:50%;
 		 margin-left: -100px;
-		 margin-top: -25px;
+		 margin-top: -60px;
 		 border-radius: 5px;
 	}
 }
