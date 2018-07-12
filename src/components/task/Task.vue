@@ -13,7 +13,7 @@
        <div>
        <div class="space"></div>
      
-        <div class="item  border-bottom" v-for="(item,index) of TaskList[tabIndex]" >
+        <div class="item  border-bottom" v-for="(item,index) of TaskList" >
           <div class="left">
             <img :src="item.imgUrl" alt="" class="tackImg" />
             <div class="task-rank">
@@ -45,7 +45,6 @@
       return {
         active: 0,
         num: 0,
-        // tabIndex : 0,
         navs: [{
             id: '1',
             name: '所有任务(3)',
@@ -65,17 +64,36 @@
     },
     methods: {
       tabs(index) {
+        let url = "http://www.phptrain.cn/task/getUserTaskList"
+        var param = new FormData()
+    	if(index===1){
+  			status=0
+  		}
+      	else if(index===2){
+      		status=1
+      	}
+      	else{
+        	status=2
+        	this.getAllTask()
+        }
+      	if(status!==2){
+          param.append("taskStatus",status)
+        }
+      	this.$http.post(url,param,{
+          headers: {
+            'Content-Type': 'application/json'
+          }
+        }).then((res)=>{
+        	const data=res.data.result
+          	const dataList=data.taskList
+          	this.TaskList=dataList
+        })
         this.num = index
         this.active = index
         this.tabIndex=index
       },
       getAllTask(){
-//      axios.get('/static/mock/status.json')
-//      .then(this.getAllTaskSucc)
         let url = "http://www.phptrain.cn/task/getUserTaskList"
-//      var taskStatus=0
-//      var param = new FormData()
-//      param.append("taskStatus",taskStatus)
         this.$http.post(url,{
           headers: {
             'Content-Type': 'application/json'
@@ -85,22 +103,22 @@
           	console.log(res)
           	const data=res.data.result
           	const dataList=data.taskList
-          	var allTask=[]
-            var tasking=[]
-            var  finishTask=[]
-            dataList.forEach(function(task){
-                if(task.status == '已完成'||task.status == '进行中'){
-                  allTask.push(task);
-                };
-                if(task.status == '进行中'){
-                  tasking.push(task);
-                };
-                if(task.status == '已完成'){
-                  finishTask.push(task);
-                };
-           });
-           var taskAll = [ allTask, tasking, finishTask]
-           this.TaskList=taskAll
+//        	var allTask=[]
+//          var tasking=[]
+//          var  finishTask=[]
+//          dataList.forEach(function(task){
+//              if(task.status == '已完成'||task.status == '进行中'){
+//                allTask.push(task);
+//              };
+//              if(task.status == '进行中'){
+//                tasking.push(task);
+//              };
+//              if(task.status == '已完成'){
+//                finishTask.push(task);
+//              };
+//         });
+//         var taskAll = [ allTask, tasking, finishTask]
+         this.TaskList=dataList
           }
         })
       },
