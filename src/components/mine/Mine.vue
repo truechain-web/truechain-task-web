@@ -6,7 +6,7 @@
       <div class="left">
         <img src="http://static.galileo.xiaojukeji.com/static/tms/seller_avatar_256px.jpg" alt="" class="userImg" />
         <div class="userRank">
-          <p class="name">{{wxNickName}}</p>
+          <p class="name" v-text="wxNickName"></p>
           <p class="rank">等级：<span>{{level}}</span></p>
         </div>
       </div>
@@ -20,7 +20,7 @@
     <div class="space"></div>
     <ul class="navBar">
       <li class="item border-right" @click="tabs(index)" v-for="(item,index) of navs" :class="{active:active==index}">
-        <span class="num">{{item.num}}<span class="unit">个</span></span>
+        <span class="num" v-text="item.num"><span class="unit">个</span></span>
         <p class="name">{{item.name}}</p>
       </li>
     </ul>
@@ -32,10 +32,10 @@
          <div class="space"></div>
       	  <div class="tabConWrapper border-bottom" v-for='(itemCon,index) in tabContents[tabIndex]' >
         <div class="contLeft">
-          <p class="type">{{itemCon.type}}</p>
-          <p class="date">{{itemCon.date}}</p>
+          <p class="type">{{itemCon.rewardResource}}收入</p>
+          <p class="date">{{itemCon.createTime}}</p>
         </div>
-        <div class="contRight">+{{itemCon.number}}</div>
+        <div class="contRight">+{{itemCon.reward}}</div>
       </div>
       </div>
      
@@ -65,6 +65,7 @@
         recommendPeople:0,
         wxNickName:'',
         level:'',
+        rewardResource:'',
         navs: [{
             id: '1',
             num: '',
@@ -94,8 +95,6 @@
         this.active = index
       }, 
       getIncomeInfo() {
-//       axios.get('/static/mock/mine.json')
-// .then(this.getInfoSucc)
         let url = 'http://www.phptrain.cn/user/getUserInfo?rewardType=1'
         this.$http.get(url).then((res)=>{
            const result=res.data.result
@@ -105,54 +104,37 @@
            this.navs[1].num=result.userAccount.ttrReward
            this.navs[2].num=result.userAccount.gitReward
            this.navs[0].num=result.userAccount.trueReward
+           console.log(res)
            if(res.data.code&&res.data){
               const data=res.data.result
               var trueList=[]
               var ttrList=[]
               var bagList=[]
-             data.userAccount.accountDetails.forEach(function(list){
+              const dataList= data.userAccount.accountDetails
+             dataList.forEach(function(list){
               if(list.rewardType===1){
-                
+                trueList.push(list)
               }
-//              if(list.type=='true奖励'){
-//                trueList.push(list)
-//              }
-//              if(list.type=='ttr奖励'){
-//                ttrList.push(list)
-//              }
-//              if(list.type=='红包奖励'){
-//                bagList.push(list)
-//              }
+             if(list.rewardType===2){
+                ttrList.push(list)
+              }
+              if(list.rewardType===3){
+                bagList.push(list)
+              }
+              if(list.rewardResource===1){
+              	list.rewardResource='任务'
+              }
+              if(list.rewardResource===2){
+              	list.rewardResource='推荐'
+              }
               })
                 
-            
+            var allIncomeList=[trueList,ttrList,bagList]
+          	  this.tabContents=allIncomeList
            }
         }).catch((err)=>{
           console.log(err)
         })
-      },
-      getInfoSucc(res) {
-        res = res.data
-        if(res.ret && res.data) {
-          const data = res.data
-          var trueList=[]
-          var ttrList=[]
-          var bagList=[]
-          data.incomeList.forEach(function(list){
-            if(list.type=='true奖励'){
-              trueList.push(list)
-            }
-            if(list.type=='ttr奖励'){
-              ttrList.push(list)
-            }
-            if(list.type=='红包奖励'){
-              bagList.push(list)
-            }
-          })
-          var allIncomeList=[trueList,ttrList,bagList]
-          this.tabContents=allIncomeList
-        }
-
       },
       handleChange(incomeType) {
         this.taskType = incomeType

@@ -73,15 +73,35 @@
 //      axios.get('/static/mock/status.json')
 //      .then(this.getAllTaskSucc)
         let url = "http://www.phptrain.cn/task/getUserTaskList"
-        var taskStatus=1
-        var param = new FormData()
-        param.append("taskStatus",taskStatus)
-        this.$http.post(url,param,{
+//      var taskStatus=0
+//      var param = new FormData()
+//      param.append("taskStatus",taskStatus)
+        this.$http.post(url,{
           headers: {
             'Content-Type': 'application/json'
           }
         }).then((res)=>{
-         console.log(res.data)
+          if(res.data.code&&res.data){
+          	console.log(res)
+          	const data=res.data.result
+          	const dataList=data.taskList
+          	var allTask=[]
+            var tasking=[]
+            var  finishTask=[]
+            dataList.forEach(function(task){
+                if(task.status == '已完成'||task.status == '进行中'){
+                  allTask.push(task);
+                };
+                if(task.status == '进行中'){
+                  tasking.push(task);
+                };
+                if(task.status == '已完成'){
+                  finishTask.push(task);
+                };
+           });
+           var taskAll = [ allTask, tasking, finishTask]
+           this.TaskList=taskAll
+          }
         })
       },
       getAllTaskSucc(res){
