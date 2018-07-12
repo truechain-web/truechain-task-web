@@ -6,13 +6,13 @@
       <div class="left">
         <img src="http://static.galileo.xiaojukeji.com/static/tms/seller_avatar_256px.jpg" alt="" class="userImg" />
         <div class="userRank">
-          <p class="name">盖尔.加朵</p>
-          <p class="rank">等级：<span>B</span></p>
+          <p class="name">{{wxNickName}}</p>
+          <p class="rank">等级：<span>{{level}}</span></p>
         </div>
       </div>
       <router-link to="recommend">
         <div class="right">
-          <p class="name">3<span class="unit">个</span></p>
+          <p class="name">{{recommendPeople}}<span class="unit">个</span></p>
           <p class="info">推荐成功人数</p>
         </div>
       </router-link>
@@ -54,15 +54,82 @@
     components: {
       Tabs,
     },
+    data() {
+      return {
+        taskType: '',
+        tabContents: [],
+        tempContents: [],
+        active: 0,
+        tabIndex:0,
+        rewardType:1,
+        recommendPeople:0,
+        wxNickName:'',
+        level:'',
+        navs: [{
+            id: '1',
+            num: '',
+            name: 'true奖励总数',
+            type: 'true奖励'
+          },
+          {
+            id: '2',
+            num: '',
+            name: 'ttr奖励总数',
+            type: 'ttr奖励'
+          },
+          {
+            id: '3',
+            num: '',
+            name: '红包奖励总数',
+            type: '红包奖励'
+          }
+        ],
+        tabContents: []
+      }
 
+    },
     methods: {
       tabs(index) {
         this.tabIndex = index
         this.active = index
-      },
+      }, 
       getIncomeInfo() {
-        axios.get('/static/mock/mine.json')
-          .then(this.getInfoSucc)
+//       axios.get('/static/mock/mine.json')
+// .then(this.getInfoSucc)
+        let url = 'http://www.phptrain.cn/user/getUserInfo?rewardType=1'
+        this.$http.get(url).then((res)=>{
+           const result=res.data.result
+           this.level=result.user.level
+           this.recommendPeople=result.recommendPeople
+           this.wxNickName=result.user.wxNickName
+           this.navs[1].num=result.userAccount.ttrReward
+           this.navs[2].num=result.userAccount.gitReward
+           this.navs[0].num=result.userAccount.trueReward
+           if(res.data.code&&res.data){
+              const data=res.data.result
+              var trueList=[]
+              var ttrList=[]
+              var bagList=[]
+             data.userAccount.accountDetails.forEach(function(list){
+              if(list.rewardType===1){
+                
+              }
+//              if(list.type=='true奖励'){
+//                trueList.push(list)
+//              }
+//              if(list.type=='ttr奖励'){
+//                ttrList.push(list)
+//              }
+//              if(list.type=='红包奖励'){
+//                bagList.push(list)
+//              }
+              })
+                
+            
+           }
+        }).catch((err)=>{
+          console.log(err)
+        })
       },
       getInfoSucc(res) {
         res = res.data
@@ -99,36 +166,7 @@
         this.tempContents = result
       }
     },
-    data() {
-      return {
-        taskType: '',
-        tabContents: [],
-        tempContents: [],
-        active: 0,
-        tabIndex:0,
-        navs: [{
-            id: '1',
-            num: '1200',
-            name: 'true奖励总数',
-            type: 'true奖励'
-          },
-          {
-            id: '2',
-            num: '200',
-            name: 'ttr奖励总数',
-            type: 'ttr奖励'
-          },
-          {
-            id: '3',
-            num: '600',
-            name: '红包奖励总数',
-            type: '红包奖励'
-          }
-        ],
-        tabContents: []
-      }
-
-    },
+    
  
     mounted() {
       this.getIncomeInfo()

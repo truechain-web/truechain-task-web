@@ -127,15 +127,15 @@
         if(res == 0) {
           this.itemList = [{
               id: "01",
-              name: "不限"
+              name: "不限",
             },
             {
               id: "02",
-              name: "个人"
+              name: "个人",
             },
             {
               id: "03",
-              name: "团队"
+              name: "团队",
             }
           ];
         }
@@ -220,6 +220,7 @@
         border-radius: 0;
         border-top-right-radius: 20px;
         border-bottom-right-radius: 20px;
+        border: none;
       }
       .cancel {
         font-size: 13px;

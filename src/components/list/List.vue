@@ -16,11 +16,12 @@
               <p class="rank">难度：<span>{{item.level}}</span></p>
             </div>
           </div>
-          <div class="center">{{item.rewardNum}}</div>
+          <div class="center">{{item.rewardNum}}True</div>
           <router-link to="taskDetail">
             <div class="right"  >抢任务</div>
           </router-link>
         </div>
+        <div class="no-data" v-if="!tempTaskList.length">没有找到符合条件的任务</div>
       </div>
 
     </div>
@@ -44,7 +45,7 @@
         taskList: [], //原始列表
         tempTaskList: [], //临时列表
         pageIndex:1,
-        pageSize:10
+        pageSize:10,
       }
     },
 
@@ -56,50 +57,63 @@
 				param.append("pageSize",this.pageSize)
         this.$http.post(url,param,{
           headers: {
-            'Content-Type': 'multipart/form-data'
+            'Content-Type': 'application/json'
           }
         }).then((res)=>{
+          if(res.data.code&&res.data){
+            const data=res.data.result
+            this.taskList=data.content
+            this.tempTaskList=data.content
+          }
           
+        })
+      },
+      hanleSelectTack(type) {
+        let grade = '';
+        var category=2; //默认不限
+        if(type === "A级"){
+           grade = "A"
+        }else if (type === "B级"){
+          grade = "B"
+        }else if (type === "C级"){
+          grade = "C"
+        }
+        else if (type === "个人"){
+          category = 0
+        }
+        else if (type === "团队"){
+          category =1
+        }
+        else{
+          grade = '';
+          category=2;
+        }
+        // 发送请求
+        let url =  "http://www.phptrain.cn/task/unauth/getTaskPage"
+        var param = new FormData()
+        param.append("pageIndex",this.pageIndex)
+        param.append("pageSize",this.pageSize)
+        if(category!==2){
+          param.append("category",category)
+        }
+        if(grade!==""){
+          param.append("level",grade)
+        }
+        this.$http.post(url,param,{
+          headers: {
+            'Content-Type': 'application/json'
+          }
+        }).then((res)=>{
           const data=res.data.result
+          if(data.content.length==0){
+            this.tempTaskList.length=0
+          }
           this.taskList=data.content
           this.tempTaskList=data.content
-          console.log(data)
         })
-//      axios.get('/static/mock/task.json')
-//        .then(this.handleInfoSucc)
-      },
-//    handleInfoSucc(res) {
-//      res = res.data
-//      if(res.ret && res.data) {
-//        const data = res.data
-//        this.taskList = data.taskList
-//        this.tempTaskList = data.taskList
-//      }
-//    },
-      hanleSelectTack(type) {
-        this.taskType = type
-        let result = []
-        for(let i = 0; i < this.taskList.length; i++) {
-          if(this.taskList[i].type == this.taskType || this.taskList[i].rank == this.taskType) {
-            result.push(this.tempTaskList[i])
-          }
-        }
-        this.tempTaskList = result
-        if(type === '不限') {
-          this.tempTaskList = this.taskList
-        }
-        if(type === '奖励降序') {
-          this.tempTaskList = this.taskList.sort(function(a, b) {
-            return a.number - b.number
-          })
-        }
-        if(type === '奖励升序') {
-          this.tempTaskList = this.taskList.sort(function(a, b) {
-            return b.number - a.number
-          })
-        }
+        
       }
-    },
+     },
     mounted() {
       this.getTaskInfo()
       this.scroll = new Bscroll(this.$refs.wrapper)
@@ -112,7 +126,11 @@
     background: #eee;
     height: 10px;
   }
-  
+  .no-data{
+    text-align: center;
+    margin: 10px 0;
+    font-size: 14px;
+  }
   .list {
     position: absolute;
     top: 60px;

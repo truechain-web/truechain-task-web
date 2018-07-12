@@ -70,8 +70,19 @@
         this.tabIndex=index
       },
       getAllTask(){
-        axios.get('/static/mock/status.json')
-        .then(this.getAllTaskSucc)
+//      axios.get('/static/mock/status.json')
+//      .then(this.getAllTaskSucc)
+        let url = "http://www.phptrain.cn/task/getUserTaskList"
+        var taskStatus=1
+        var param = new FormData()
+        param.append("taskStatus",taskStatus)
+        this.$http.post(url,param,{
+          headers: {
+            'Content-Type': 'application/json'
+          }
+        }).then((res)=>{
+         console.log(res.data)
+        })
       },
       getAllTaskSucc(res){
         res=res.data
