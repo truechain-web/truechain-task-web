@@ -1,21 +1,29 @@
 <template>
   <div>
-    <tabs></tabs>
-    <div class="space"></div>
-    <ul class="navBar">
-      <li class="item border-right" @click="tabs(index)" v-for="(item,index) of navs" :class="{active:active==index}">
-        {{item.name}}
-      </li>
-    </ul>
-   
+    <div class="header-top">
+      <div class="header-wrapper">
+      	<div class="img-wrapper"  @click="goback"><img src="../../assets/img/back.png" alt="" /></div>
+       <div>我的任务</div>
+      </div>
+      <div class="space"></div>
+    </div>
+    <div>
+        <ul class="navBar">
+          <li class="item border-right" @click="tabs(index)" v-for="(item,index) of navs" :class="{active:active==index}">
+            {{item.name}}({{item.num}})
+          </li>
+        </ul>
+         <div class="space space_"></div>
+    </div>
+  
+  
     
     <div class="list border-bottom" ref="wrapper">
+      
        <div>
-       <div class="space"></div>
-     
-        <div class="item  border-bottom" v-for="(item,index) of TaskList" >
+        <div class="item  border-bottom" v-for="(item,index) of TaskList" :key="index" >
           <div class="left">
-            <img :src="item.imgUrl" alt="" class="tackImg" />
+           <img src="../../assets/img/task-logo.png" alt="" class="tackImg" />
             <div class="task-rank">
               <p class="name">{{item.name}}</p>
               <p class="rank">难度：<span>{{item.rank}}</span></p>
@@ -25,10 +33,13 @@
           <router-link to="taskDetail">
             <div class="right" >详情</div>
           </router-link>
-          
         </div>
       </div>
+      <div class="loading-container" v-show="hasCode">
+        <loading></loading>
+      </div>
     </div>
+    <tabs></tabs>
   </div>
 </template>
 
@@ -36,33 +47,40 @@
   import Bscroll from 'better-scroll'
   import Tabs from '../tab/Tab'
   import axios from 'axios'
+  import Loading from '../../base/loading/Loading'
   export default {
     name: "Task",
     components: {
       Tabs,
+      Loading
     },
     data() {
       return {
         active: 0,
-        num: 0,
+        hasCode:true,
         navs: [{
             id: '1',
-            name: '所有任务(3)',
+            name: '所有任务',
+            num:0
           },
           {
             id: '2',
-            name: '进行中任务(4)',
+            name: '进行中任务',
+            num:0
           },
           {
             id: '3',
-            name: '已完成任务(7)',
+            name: '已完成任务',
+            num:0
           }
         ],
-         tabIndex : 0,
          TaskList: []
       }
     },
     methods: {
+      goback(){
+         this.$router.go(-1)
+      },
       tabs(index) {
         let url = "http://www.phptrain.cn/task/getUserTaskList"
         var param = new FormData()
@@ -84,13 +102,13 @@
             'Content-Type': 'application/json'
           }
         }).then((res)=>{
-        	const data=res.data.result
-          	const dataList=data.taskList
-          	this.TaskList=dataList
+             if(res.data.code&&res.data){
+        	   const data=res.data.result
+          	 const dataList=data.taskList
+          	 this.TaskList=dataList
+          	}
         })
-        this.num = index
         this.active = index
-        this.tabIndex=index
       },
       getAllTask(){
         let url = "http://www.phptrain.cn/task/getUserTaskList"
@@ -100,56 +118,35 @@
           }
         }).then((res)=>{
           if(res.data.code&&res.data){
-          	console.log(res)
+            if(res.data.code){
+              this.hasCode=false
+            }
           	const data=res.data.result
           	const dataList=data.taskList
-//        	var allTask=[]
-//          var tasking=[]
-//          var  finishTask=[]
-//          dataList.forEach(function(task){
-//              if(task.status == '已完成'||task.status == '进行中'){
-//                allTask.push(task);
-//              };
-//              if(task.status == '进行中'){
-//                tasking.push(task);
-//              };
-//              if(task.status == '已完成'){
-//                finishTask.push(task);
-//              };
-//         });
-//         var taskAll = [ allTask, tasking, finishTask]
-         this.TaskList=dataList
-          }
+           this.TaskList=dataList
+           this.navs[0].num=data.taskTotal
+           this.navs[1].num=data.taskingTotal
+           this.navs[2].num=data.taskComplateTolal
+           this.$nextTick(()=>{
+                this._initScroll();
+              })
+            }
         })
       },
-      getAllTaskSucc(res){
-        res=res.data
-        if(res.ret&&res.data){
-            const data=res.data
-            var allTask=[]
-            var tasking=[]
-            var  finishTask=[]
-            data.allTask.forEach(function(task){
-                if(task.status == '已完成'||task.status == '进行中'){
-                  allTask.push(task);
-                };
-                if(task.status == '进行中'){
-                  tasking.push(task);
-                };
-                if(task.status == '已完成'){
-                  finishTask.push(task);
-                };
-           });
-           var taskAll = [ allTask, tasking, finishTask]
-           this.TaskList=taskAll
-          
-        }
-           
+      _initScroll(){
+        this.scroll = new Bscroll(this.$refs.wrapper)
       }
     },
-    mounted() {
-      this.scroll = new Bscroll(this.$refs.wrapper)
-      this.getAllTask()
+    created() {
+      setTimeout(()=>{
+           this.getAllTask()
+      },1000)
+      
+    },
+    watch:{
+       TaskList(a){
+         this.taskList = a;
+       }
     }
 
   }
@@ -160,11 +157,30 @@
     background: #eee;
     height: 10px;
   }
-  
+ .header-top{
+   height: 50px;
+   line-height: 50px;
+   position: fixed;
+   top: 0;
+   left: 0;
+   right: 0;
+   .header-wrapper{
+     text-align: center;
+     .img-wrapper{
+       position: absolute;
+       width: 30px;
+       left: 0;
+       right: 0;
+       img{
+         width: 24px;
+       }
+     }
+   }
+ }
 .list{
    overflow: hidden;
    position: absolute;
-   top: 60px;
+   top: 120px;
     left: 0;
     right: 0;
     bottom: 60px;
@@ -182,6 +198,7 @@
         .name {
           font-size: 17px;
           color: #2E353B;
+          margin-top: 6px;
         }
         .rank {
           font-size: 13px;
@@ -192,6 +209,7 @@
         width: 50px;
         height: 50px;
         vertical-align: top;
+        border: 1px solid #eee;
       }
     }
     .center {
@@ -210,10 +228,15 @@
   }
 }
 
-  
+  .space_{
+     position: fixed;
+    top:110px;
+    left: 0;
+    right: 0;
+  }
   .navBar {
     position: fixed;
-    top: 10px;
+    top:60px;
     left: 0;
     right: 0;
     height: 50px;
@@ -252,5 +275,11 @@
         margin-top: 2px;
       }
     }
+  }
+  .loading-container{
+    position: absolute;
+    width: 100%;
+    top: 50%;
+    transform: translateY(-50%);
   }
 </style>

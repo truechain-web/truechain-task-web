@@ -12,11 +12,10 @@
         <input type="text" class="search-input" v-model="keyword" />
         <span @click="cancelSearch" class="cancel">取消</span>
       </div>
-
+      <div class="space"></div>
     </div>
     <div class="search-content" v-show="keyword" ref="wrapper">
       <div>
-        <div class="space"></div>
         <div class="item" v-for="item of list">
           <div class="left">
             <img :src="item.imgUrl" alt="" class="tackImg" />
@@ -29,6 +28,7 @@
           <div class="right">抢任务</div>
 
         </div>
+        <div class="space"></div>
       </div>
 
       <div class="search-item" v-show="hasnoData">没有找到匹配数据</div>
@@ -68,9 +68,7 @@
         return !this.list.length;
       }
     },
-    mounted() {
-      this.scroll = new Bscroll(this.$refs.wrapper)
-    },
+    
     watch: {
       keyword() {
         if(this.timer) {
@@ -81,20 +79,28 @@
         }
         this.timer = setTimeout(() => {
           const result = [];
+          console.log(this.taskList)
           for(let i in this.taskList) {
             if(this.taskList[i].name.indexOf(this.keyword) >= 0) {
               result.push(this.taskList[i]);
             }
           }
           this.list = result;
+          this.$nextTick(()=>{
+              this._initScroll();
+            })
         }, 100);
       }
     },
     methods: {
+      _initScroll(){
+        this.scroll = new Bscroll(this.$refs.wrapper)
+      },
       searchItem() {
         this.show = !this.show;
         this.isShow = false;
-
+        this.showMask =false
+        this.$emit('fetch')
       },
       cancelSearch(e) {
         this.show = !this.show;
@@ -178,9 +184,13 @@
   };
 </script>
 <style lang="less" scoped>
+ .space {
+    background: #eee;
+    height: 10px;
+  }
   .header {
     position: fixed;
-    top: 10px;
+    top: 60px;
     left: 0;
     right: 0;
     height: 50px;
@@ -233,7 +243,7 @@
   .select-wrapper {
     background: #fff;
     z-index: 80;
-    top: 60px;
+    top: 120px;
     position: absolute;
     left: 0;
     right: 0;
@@ -264,7 +274,7 @@
     left: 0;
     right: 0;
     bottom: 60px;
-    top: 50px;
+    top: 110px;
     z-index: 1;
     overflow: hidden;
     .space {
@@ -319,7 +329,7 @@
   .mask {
     position: absolute;
     left: 0;
-    top: 10px;
+    top: 60px;
     right: 0;
     bottom: 0;
     background: #000;

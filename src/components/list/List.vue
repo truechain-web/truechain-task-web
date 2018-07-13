@@ -1,19 +1,21 @@
 <template>
   <div>
-    <div class="space"></div>
-    <list-header @change="hanleSelectTack" :taskList="taskList"></list-header>
-
+     <div class="header-top">
+      <div class="header-wrapper">
+        <div class="img-wrapper"  @click="goback"><img src="../../assets/img/back.png" alt="" /></div>
+       <div>任务列表</div>
+      </div>
+      <div class="space"></div>
+    </div>
+    <list-header @change="hanleSelectTack" :taskList="taskList" @fetch="handleFetch"></list-header>
     <div class="list border-bottom" ref="wrapper">
-
       <div>
-        <div class="space"></div>
         <div class="item  border-bottom" v-for="item of tempTaskList">
-
           <div class="left">
-            <img :src="item.imgUrl" alt="" class="tackImg" />
+            <img src="../../assets/img/task-logo.png" alt="" class="tackImg" />
             <div class="task-rank">
               <p class="name">{{item.name}}</p>
-              <p class="rank">难度：<span>{{item.level}}</span></p>
+              <p class="rank">难度：<span>{{item.level}}级</span></p>
             </div>
           </div>
           <div class="center">{{item.rewardNum}}True</div>
@@ -21,23 +23,26 @@
             <div class="right"  >抢任务</div>
           </router-link>
         </div>
-        <div class="no-data" v-if="!tempTaskList.length">没有找到符合条件的任务</div>
+        <div class="no-data" v-show="hasData">没有找到符合条件的任务</div>
       </div>
-
+      <div class="loading-container" v-show="hasCode">
+        <loading></loading>
+      </div>
     </div>
     <tabs></tabs>
   </div>
 </template>
 <script>
-  import axios from 'axios'
   import Bscroll from 'better-scroll'
   import ListHeader from './Header'
   import Tabs from '../tab/Tab'
+  import Loading from '../../base/loading/Loading'
   export default {
     name: 'List',
     components: {
       ListHeader,
-      Tabs
+      Tabs,
+      Loading
     },
     data() {
       return {
@@ -46,10 +51,15 @@
         tempTaskList: [], //临时列表
         pageIndex:1,
         pageSize:10,
+        hasData:false,
+        hasCode:true
       }
     },
 
     methods: {
+      goback(){
+         this.$router.go(-1)
+      },
       getTaskInfo() {
         let url = "http://www.phptrain.cn/task/unauth/getTaskPage"
 				var param = new FormData()
@@ -61,12 +71,24 @@
           }
         }).then((res)=>{
           if(res.data.code&&res.data){
+            if(res.data.code){
+              this.hasCode=false
+            }
             const data=res.data.result
             this.taskList=data.content
             this.tempTaskList=data.content
+               this.$nextTick(()=>{
+                this._initScroll();
+              })
           }
-          
         })
+      },
+       _initScroll(){
+        this.scroll = new Bscroll(this.$refs.wrapper)
+      },
+      handleFetch(){
+        this.hasData=false
+        this.getTaskInfo()
       },
       hanleSelectTack(type) {
         let grade = '';
@@ -105,23 +127,53 @@
           }
         }).then((res)=>{
           const data=res.data.result
-          if(data.content.length==0){
-            this.tempTaskList.length=0
+          if(res.data.code&&res.data){
+            this.hasData=false
+            this.taskList=data.content
+            this.tempTaskList=data.content
+           this.$nextTick(()=>{
+              this._initScroll();
+            })
           }
-          this.taskList=data.content
-          this.tempTaskList=data.content
+          if(data.content==''){
+             this.hasData=true
+          }
         })
         
       }
      },
     mounted() {
-      this.getTaskInfo()
-      this.scroll = new Bscroll(this.$refs.wrapper)
+      setTimeout(()=>{
+           this.getTaskInfo()
+      },1000)
+    },
+    created(){
+      
     }
   }
 </script>
 
 <style lang="less" scoped>
+ .header-top{
+   height: 50px;
+   line-height: 50px;
+   position: fixed;
+   top: 0;
+   left: 0;
+   right: 0;
+   .header-wrapper{
+     text-align: center;
+     .img-wrapper{
+       position: absolute;
+       width: 30px;
+       left: 0;
+       right: 0;
+       img{
+         width: 24px;
+       }
+     }
+   }
+ }
   .space {
     background: #eee;
     height: 10px;
@@ -133,7 +185,7 @@
   }
   .list {
     position: absolute;
-    top: 60px;
+    top: 120px;
     left: 0;
     right: 0;
     bottom: 60px;
@@ -152,6 +204,7 @@
           .name {
             font-size: 17px;
             color: #2E353B;
+                margin-top: 6px;
           }
           .rank {
             font-size: 13px;
@@ -162,6 +215,7 @@
           width: 50px;
           height: 50px;
           vertical-align: top;
+          border: 1px solid #eee;
         }
       }
       .center {
@@ -178,5 +232,11 @@
         border-radius: 5px;
       }
     }
+  }
+  .loading-container{
+    position: absolute;
+    width: 100%;
+    top: 50%;
+    transform: translateY(-50%);
   }
 </style>

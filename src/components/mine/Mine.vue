@@ -1,6 +1,12 @@
 <template>
   <div>
-    <div class="space"></div>
+    <div class="header-top">
+      <div class="header-wrapper">
+        <div class="img-wrapper"  @click="goback"><img src="../../assets/img/back.png" alt="" /></div>
+       <div>个人中心</div>
+      </div>
+      <div class="space"></div>
+    </div>
     
     <div class="header">
       <div class="left">
@@ -18,18 +24,21 @@
       </router-link>
     </div>
     <div class="space"></div>
-    <ul class="navBar">
+    <div >
+      <ul class="navBar">
       <li class="item border-right" @click="tabs(index)" v-for="(item,index) of navs" :class="{active:active==index}">
         <span class="num" v-text="item.num"><span class="unit">个</span></span>
         <p class="name">{{item.name}}</p>
       </li>
     </ul>
+    	 <div class="space space_"></div>
+    </div>
+    
   
 
     <div class="tabCon" ref="wrapper">
-      
       <div >
-         <div class="space"></div>
+         
       	  <div class="tabConWrapper border-bottom" v-for='(itemCon,index) in tabContents[tabIndex]' >
         <div class="contLeft">
           <p class="type">{{itemCon.rewardResource}}收入</p>
@@ -90,6 +99,9 @@
 
     },
     methods: {
+      goback(){
+         this.$router.go(-1)
+      },
       tabs(index) {
         this.tabIndex = index
         this.active = index
@@ -164,14 +176,35 @@
     background: #eee;
     height: 10px;
   }
-  
+  .space_{
+     position: fixed;
+    top:234px;
+    left: 0;
+    right: 0;
+  }
+   .header-top{
+   height: 50px;
+   line-height: 50px;
+   .header-wrapper{
+     text-align: center;
+     .img-wrapper{
+       position: absolute;
+       width: 30px;
+       left: 0;
+       right: 0;
+       img{
+         width: 24px;
+       }
+     }
+   }
+ }
   .tabCon {
+    overflow: hidden;
     position: absolute;
     left: 0;
     right: 0;
     bottom: 60px;
-    top: 184px;
-    overflow: hidden;
+    top: 244px;
     .tabConWrapper {
       display: flex;
       padding: 0 15px;
@@ -206,6 +239,7 @@
     display: flex;
     padding: 12px 18px 12px 14px;
     align-items: center;
+    margin-top: 10px;
     .left {
       flex: 1;
       .userImg {
@@ -259,9 +293,6 @@
     height: 76px;
     display: flex;
     text-align: center;
-    position: fixed;
-    left: 0;
-    right: 0;
     background: #fff;
     .item {
       flex: 1;
