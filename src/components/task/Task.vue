@@ -26,12 +26,12 @@
            <img src="../../assets/img/task-logo.png" alt="" class="tackImg" />
             <div class="task-rank">
               <p class="name">{{item.name}}</p>
-              <p class="rank">难度：<span>{{item.rank}}</span></p>
+              <p class="rank">难度：<span>{{item.level}}</span></p>
             </div>
           </div>
-          <div class="center">{{item.status}}</div>
+          <div class="center">{{item.taskStatus}}</div>
           <router-link to="taskDetail">
-            <div class="right" >详情</div>
+            <div class="right" >{{item.buttonText}}</div>
           </router-link>
         </div>
       </div>
@@ -58,6 +58,8 @@
       return {
         active: 0,
         hasCode:true,
+        taskStatus:'',
+        buttonText:'',
         navs: [{
             id: '1',
             name: '所有任务',
@@ -82,8 +84,10 @@
          this.$router.go(-1)
       },
       tabs(index) {
+      console.log(index,"-----")
         let url = "http://www.phptrain.cn/task/getUserTaskList"
         var param = new FormData()
+        console.log(index)
     	if(index===1){
   			status=0
   		}
@@ -105,6 +109,18 @@
              if(res.data.code&&res.data){
         	   const data=res.data.result
           	 const dataList=data.taskList
+          	 dataList.forEach(function(list){
+          	 console.log(list.taskStatus)
+							if(list.taskStatus === 0) {
+								list.taskStatus = '进行中'
+								list.buttonText='提交'
+							}
+							if(list.taskStatus === 1) {
+								list.taskStatus = '已完成'
+							  list.buttonText='详情'
+								
+							}
+						})
           	 this.TaskList=dataList
           	}
         })
@@ -117,12 +133,25 @@
             'Content-Type': 'application/json'
           }
         }).then((res)=>{
+           var _this = this;
           if(res.data.code&&res.data){
             if(res.data.code){
               this.hasCode=false
             }
           	const data=res.data.result
           	const dataList=data.taskList
+          	
+						dataList.forEach(function(list){
+							if(list.taskStatus === 0) {
+								list.taskStatus = '进行中'
+								list.buttonText='提交'
+								
+							}
+							else{
+								list.taskStatus = '已完成'
+								list.buttonText='详情'
+							}
+						})
            this.TaskList=dataList
            this.navs[0].num=data.taskTotal
            this.navs[1].num=data.taskingTotal
@@ -133,6 +162,7 @@
             }
         })
       },
+    
       _initScroll(){
         this.scroll = new Bscroll(this.$refs.wrapper)
       }

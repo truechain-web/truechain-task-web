@@ -93,6 +93,7 @@
       hanleSelectTack(type) {
         let grade = '';
         var category=2; //默认不限
+        var reward=2 //奖励默认不限
         if(type === "A级"){
            grade = "A"
         }else if (type === "B级"){
@@ -106,9 +107,16 @@
         else if (type === "团队"){
           category =1
         }
+        else if (type === "奖励升序"){
+          reward	 =0
+        }
+        else if (type === "奖励降序"){
+          reward	 =1
+        }
         else{
           grade = '';
           category=2;
+           reward	 =2
         }
         // 发送请求
         let url =  "http://www.phptrain.cn/task/unauth/getTaskPage"
@@ -120,6 +128,9 @@
         }
         if(grade!==""){
           param.append("level",grade)
+        }
+        if(reward!==2){
+          param.append("reward",reward)
         }
         this.$http.post(url,param,{
           headers: {
