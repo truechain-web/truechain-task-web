@@ -44,6 +44,11 @@ export default {
 			 this.$router.push({path:"/regist"})
 		},
 		login(){
+			 if(!this.phone || !this.code){
+				   this.tips ="请填写登录信息"
+					 this.showTips()
+					 return
+			 }
 			 let url = "http://www.phptrain.cn/unauth/account/login"
 				var param = new FormData()
 				param.append("mobile",this.phone)
@@ -57,7 +62,12 @@ export default {
 					if(res.data.message==="成功"){
 						 // 登录成功
 						 this.tips ="登录成功.即将跳转"
-					   this.showTips()
+						 this.showTips()
+						 let token = JSON.stringify(res.data.result)
+						 localStorage.setItem("token",token)
+						 this.$http.post("http://www.phptrain.cn/task/getUserTaskList").then(res=>{
+							  console.log(res)
+						 })
 					}else{
 						  	this.tips ="登录失败请重新登录"
 					      this.showTips()
