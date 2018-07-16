@@ -8,10 +8,10 @@
 					<form class="form">
 						  <input class="inp" type="text" placeholder="姓名" v-model="uname">
 						  <input class="inp" type="text" placeholder="微信昵称" v-model="wechatName">
-							<div class="inpx">
-								<input class="inpx-l" type="text" placeholder="微信号" v-model="wechatId">
-								<input class="inpx-r" type="button" value="获取" @click="getWeChatId">
-							</div>
+						
+								<input class="inp" type="text" placeholder="微信号" v-model="wechatId">
+								<!-- <input class="inpx-r" type="button" value="获取" @click="getWeChatId"> -->
+						
 							<input class="inp" type="text" placeholder="钱包地址" v-model="address">
 							<input class="inp" type="number" placeholder="联系电话" v-model="phone">
 						  <div class="inpx">

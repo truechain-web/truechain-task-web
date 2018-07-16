@@ -19,9 +19,7 @@
             </div>
           </div>
           <div class="center">{{item.rewardNum}}True</div>
-          <router-link to="taskDetail">
-            <div class="right"  >抢任务</div>
-          </router-link>
+          <div class="right"  @click="buttonClick(item.id)" >抢任务</div>
         </div>
         <div class="no-data" v-show="hasData">没有找到符合条件的任务</div>
       </div>
@@ -89,6 +87,9 @@
       handleFetch(){
         this.hasData=false
         this.getTaskInfo()
+      },
+      buttonClick (id){
+        this.$router.push({name:"TaskDetail",params:{id:id,type:'robTask'}})
       },
       hanleSelectTack(type) {
         let grade = '';

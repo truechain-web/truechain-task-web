@@ -1,66 +1,82 @@
 <template>
-    <div>
-        <div class='space'></div>
-        <div class="taskCont">
-            <div class='title' v-model="titleDate">
-                <img :src="titleDate.imgUrl" alt="" class="tackImg left" />
+    <div  >
+        <div class="header-top">
+             <div class="header-wrapper">
+      	        <div class="img-wrapper"  @click="goback"><img src="../../assets/img/back.png" alt="" /></div>
+                <div v-if="type ==='robTask'">抢任务</div>
+                <div v-if="type==='myTask' && buttonText =='详情'">任务详情</div>
+                <div v-if="type==='myTask' && buttonText =='提交'">提交任务</div>
+            </div>
+            <div class="space"></div>
+        </div>
+        <div class="taskCont" >
+            <div class='title'  >
+                <img :src="data.task.iconPath" alt="" class="tackImg left" />
                 <div class="left titleCont">
-                    <h2>{{titleDate.title}}</h2>
-                    <p class="orange">{{titleDate.number}}</p>
-                    <p>难度:<i class="orange"> {{titleDate.level}}</i> </p>
+                    <h2>{{data.task.name}}</h2>
+                    <p class="orange">{{data.task.rewardNum}}
+                        <span v-if="data.task.rewardType=='1'">true</span>
+                        <span v-if="data.task.rewardType=='2'">ttr</span>
+                        <span v-if="data.task.rewardType=='3'">rmp</span>                                                
+                    </p>
+                    <p>难度:<i class="orange"> {{data.task.level}}级</i> </p>
                 </div> 
           </div>
-          <div class="content">
+          <div class="content" >
               <div class="cont-title">任务周期</div>
-              <p>2018-06-21至2018-07-02</p>
+              <p>{{data.task.startDateTime}}至{{data.task.endDateTime}}</p>
               <div class="cont-title">人数限制</div>
-              <p>3人</p>
+              <p>{{data.task.peopleNum}}人</p>
               <div class="cont-title">任务描述</div>
-              <div class="cont-detail">区块链的出快大小和出块速度应当怎么设置比较合适</div>
-              <div class="cont-detail">
-                  区块链3.0之后区块链应用会迎来井喷似的发展，数据会越来越多，会越来越多样化，现在BTC的块大小为1M，那么到达区块链3.0时代之后，区块链的数据块大小以及出块速度设置为多少较为合适。
-              </div>
-              <div class="cont-detail">
-                  文字和图片量超1000字，为原创文章。 对于某些算法说明，要给出伪代码或者对应的流程图、架构图。 不能仅仅是网上各种资讯文章的摘抄。
-              </div>
+              <div class="cont-detail">{{data.task.description}}</div>
               <div class="cont-title">提交地址</div>
-              <p>https://run.mockplus.cn/xZ8gk87/index.html</p>
+              <p>{{data.task.pushAddress}}</p>
           </div>
         </div>
-        <div class='space'></div>          
-        <div class="bottom" v-if="type==='detail' ">
-            <div class="cont-title">完成情况</div>
-            <p><i>提交地址：</i>https://run.mockplus.cn/index.html </p>
-            <p><i>说&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 明：</i>0621任务提交，区块链的出快大小 </p>
-            <p><i>审核结果：</i>第一名  </p>
-            <p><i>奖励收入：</i>200true </p>          
-        </div>
-        <div class="bottom" v-if="type==='registration' ">
-            <div class="cont-title">报名情况</div>
-            <p>需要3人，已报<i class="orange">2</i>人</p>
-            <div class='button one'>抢任务</div>
-            <div class='button two'>推荐转发</div>
-            <div class='button three'>注册</div>
-            <div class='button four'>已满</div>            
-        </div>
-        <div class="bottom" v-if="type==='commit' ">
-            <input class="input-top inp" placeholder="提交地址"/> 
-            <input class="input-bottom inp"  placeholder="说明"/>
-            <div class='button two' >提交审核</div>            
-                      
-        </div>
-        <div class="robTask" v-if="type==='robTask' ">
-            <div class="cont-title">报名情况</div>
-            <div class="robTask-flex" v-for='item of roleList'>
-                <div class="one">前端H5</div>
-                <div class="two">（需要3人，已报2人）</div>
-                <div class="three">1000true</div>
-                <div class="four ">抢任务</div> 
-            </div>
-        </div>
+        <div class='space'></div> 
 
+    <!-- 抢任务-任务列表过来 -->
+        <div class="robTask" v-if=" type ==='robTask' ">
+            <div class="cont-title">报名情况</div>
+            <!-- 任务个人 -->
+            <div  v-for='item of data.taskDetailList' v-if="data.task.category=='0'">
+                <div class="taskPer">需要{{item.peopleNum}}人，已报<span class="red">{{item.hasPeople}}</span>人</div>  
+                              
+            </div>
+            <!-- 任务-团队 -->
+            <div class="robTask-flex" v-for='item of data.taskDetailList' v-if="data.task.category=='1'">
+                <div class="one">{{item.station}}</div>
+                <div class="two">（需要{{item.peopleNum}}人，已报<span class="red">{{item.hasPeople}}</span>人）</div>
+                <div class="three">{{item.rewardNum}}
+                    <span v-if="data.task.rewardType=='1'">true</span>
+                    <span v-if="data.task.rewardType=='2'">ttr</span>
+                    <span v-if="data.task.rewardType=='3'">rmp</span> 
+                </div>
+                <div class="five"  @click="holdTask(item)" >抢任务</div> 
+                <div class="four" v-if="item.isFull=='1'"  >已满</div> 
+                <!-- <div class="four" v-if="!localStorage.token" to="/Login">注册</div>  -->
+            </div>
+            <div class="bottom" >
+                <div class='button one' @click="holdTask"  v-if="data.task.category=='0'">抢任务</div>
+                <div class='button two' >推荐转发</div>                
+            </div>            
+        </div>
+        <!-- 已经完成 -->
+        <div class="bottom" v-if="type==='myTask' && buttonText =='详情'">
+            <div class="cont-title">完成情况</div>
+            <p><i>提交地址：</i>{{data.taskCompleteInfo.pushAddress}} </p>
+            <p><i>说&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 明：</i>{{data.taskCompleteInfo.remark}} </p>
+            <p><i>审核结果：</i>{{data.taskCompleteInfo.auditResult}}  </p>
+            <p><i>奖励收入：</i>{{data.taskCompleteInfo.reward}} </p>          
+        </div>
+        <!-- 未完成待提交 -->
+        <div class="bottom" v-if="type==='myTask' && buttonText =='提交' ">
+            <input class="input-top inp" placeholder="提交地址" v-modal="commitAddress"/> 
+            <input class="input-bottom inp"  placeholder="说明" v-modal="remark"/>
+            <div class='button two'  @click="commit">提交审核</div>                                  
+        </div>
         <div class='space'></div>                  
- 
+        <div class="tips" v-show="showss">{{tips}}</div>
     </div>
 </template>
 
@@ -75,33 +91,179 @@
     },
     data() {
       return {
-        titleDate: {
-            imgUrl:"http://img1.qunarzz.com/piao/fusion/1710/a6/83f636bd75ae6302.png",
-            title:'我是兼职任务标题',
-            number:'200true',
-            level:'B级'
-
+        data:{
+            task:{
+                // iconPath:'http://img1.qunarzz.com/piao/fusion/1710/a6/83f636bd75ae6302.png'
+            }
         },
-        // type: 'detail'
-        type: 'registration', 
-        // type: 'commit',                     
-        // type: 'robTask',
-        roleList:[{
-        }]          
+        type:'',  // myTask--我的任务页面跳转    robTask-任务列表跳转   
+        roleList:[{}],
+        buttonText:'', // 详情  提交
+        showss:false,
+        tips:''  ,
+        commitAddress:'',
+          remark:'' 
     
       }
     },
     methods: {
-    
+        goback(){
+            this.$router.go(-1)
+        },
+        getDetail(){
+            let id = this.$router.history.current.params.id
+            let url = "http://www.phptrain.cn/task/unauth/getTaskInfo?taskId="+id
+            var param = {
+                    taskId:id
+                }
+			    this.$http.post(url,param,{
+					headers: {
+					    'Content-Type': 'application/json'
+					}
+			 }).then((res)=>{
+					if(res.data.message==="成功"){
+						if(res.data.result){
+                            this.data= res.data.result
+                        }
+					}else{
+						  
+					}
+			 })	
+
+        },
+        getUserTaskInfo(){
+             let id = this.$router.history.current.params.id
+             console.log(id)
+             let url = "http://www.phptrain.cn/task/getUserTaskInfo?taskId="+id
+				var param = {
+                    taskId:id
+                }
+			    this.$http.post(url,param,{
+					headers: {                      
+					    'Content-Type': 'application/json'
+					}
+			 }).then((res)=>{
+					if(res.data.message==="成功"){
+                        if(res.data.result){
+                            this.data = res.data.result
+                        }					
+					}else{
+						this.tips = res.data.message
+					    this.showTips()   
+					}
+			 })
+        },
+        showTips(callback){
+			this.showss= true;
+			var _this = this;
+            setTimeout(function(){
+                _this.showss = false
+                if(callback){
+                    callback()
+                }},1000)
+		},
+        holdTask(item){
+            if(!localStorage.token){
+                this.tips ="您尚未注册，请先注册"
+				this.showTips()
+				return 
+            } 
+            if(item && item.isLevelEnough ==='0'){
+                this.tips ="您的开发评级为："+item.userleve+"，请选择符合您开发等级的任务"
+				this.showTips()
+				return
+            }
+            let id = this.$router.history.current.params.id
+            if(item.id){
+                id = item.id
+                console.log(id)
+                
+            }
+            let url = "http://www.phptrain.cn/task/holdTask?taskDetailId="+id
+            var param = {
+                taskDetailId:id
+            }
+            this.$http.post(url,param,{
+                headers: {
+                    'Token':'',
+                    'Agent':'',
+                    'Content-Type': 'application/json'
+                }
+                }).then((res)=>{
+                if(res.data.message==="成功"){
+                    this.tips ="恭喜你！抢到任务 "
+                    this.showTips()
+                    var _this=this
+                    setTimeout(function(){
+                        _this.$router.push({path:"Task"})    
+                       },2000)
+                    return 
+                    
+                }else{
+                    this.tips = res.data.message
+					this.showTips()   
+                }
+            })	
+        },
+        commit(){
+            let id = this.$router.history.current.params.id
+             let url = "http://www.phptrain.cn/task/commitUserTask?taskId="+id
+				var param = {
+                    taskId:id,
+                    commitAddress:this.commitAddress,
+                    remark:this.remark
+                }
+			    this.$http.post(url,param,{
+					headers: {                      
+					    'Content-Type': 'application/json'
+					}
+			 }).then((res)=>{
+					if(res.data.message==="成功"){
+                        
+                        this.tips = '提交成功'
+                        this.showTips() 
+                        var _this=this
+                        setTimeout(function(){
+                            _this.$router.push({path:"Task"})    
+                        },1500)
+                    				
+					}else{
+						this.tips = res.data.message
+					    this.showTips()   
+					}
+			 })
+        }
+             	
+        
     },
     mounted() {
-     
+        this.type = this.$router.history.current.params.type 
+        this.buttonText = this.$router.history.current.params.buttonText
+        if(this.type=='robTask') {
+            this.getDetail()            
+        } else {
+            this.getUserTaskInfo()            
+        }
     }
 
   }
 </script>
 
 <style scoped lang="less">
+.tips{
+    position: absolute;
+    background-color: #00AAEE;
+    color:white;
+    text-align: center;
+    width:200px;
+    height: 50px;
+    line-height: 50px;
+    left:50%;
+    top:50%;
+    margin-left: -100px;
+    margin-top: -120px;
+    border-radius: 5px;
+}
 .space {
     background: #eee;
     height: 10px;
@@ -126,9 +288,33 @@
     font-size: 15px;
     color: #FFAE0F;
 }
+.red {
+        color:#EF5A50;
+}
+.header-top{
+   height: 50px;
+   line-height: 50px;
+   top: 0;
+   left: 0;
+   right: 0;
+   .header-wrapper{
+     text-align: center;
+     .img-wrapper{
+       position: absolute;
+       width: 30px;
+       left: 0;
+       right: 0;
+       img{
+         width: 24px;
+       }
+     }
+   }
+ }
 .taskCont {
     padding: 15px;
     padding-bottom: 25px;
+    font-size: 14px;
+    font-family: MicrosoftYaHei;
     .title {
         padding-bottom: 15px;
         border-bottom: #E0E4E5 solid 1px;
@@ -180,6 +366,7 @@
             color: #FFAE0F;
         }
     }
+   
     .button {
         width:100%;
         height: 40px;
@@ -226,6 +413,13 @@
 }
 .robTask {
    padding: 13px;
+   .taskPer{
+        font-size: 13px;
+        margin-top: 10px;
+        display: flex;
+        height: 40px;
+        border-bottom: 1px solid #E0E4E5;
+   }
    .robTask-flex {
         font-size: 13px;
         margin-top: 23px;
@@ -233,30 +427,40 @@
         height: 40px;
         border-bottom: 1px solid #E0E4E5;
         .one {
-            flex: 2;
+            flex: 3;
             padding-top: 5px;
         }
         .two {
-            flex: 4;
+            // flex: ;
             padding-top: 5px;
-            
-
+            color: #A1ACB4
         }
         .three {
             flex: 2;
-            margin-left: 25px;
+            margin-left: 20px;
             text-align: center;
             padding-top: 5px;
-            
-            
+            color:#FFAE0F;
+            font-size: 14px
         }
         .four {
             flex: 2;
-            margin-left: 30px;
+            margin-left: 20px;
             text-align: center;
             height: 30px;
             line-height: 30px;
-            background-color: #00AAEE;
+            background-color: #e6e0e0;
+            color:#A1ACB4;
+            border-radius: 5px;
+        }
+        .five {
+            flex: 2;
+            margin-left: 20px;
+            text-align: center;
+            height: 30px;
+            line-height: 30px;
+            background-color: #FFAE0F;
+            color: #E0E4E5;
             border-radius: 5px;
         }
    }

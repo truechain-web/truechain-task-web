@@ -57,7 +57,7 @@ export default new Router({
       name: 'Recommend',
       component: Recommend
     },{
-      path: '/taskDetail',
+      path: '/taskDetail:id',
       name: 'TaskDetail',
       component: TaskDetail
     },

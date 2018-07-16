@@ -68,9 +68,10 @@ export default {
 						 this.$http.post("http://www.phptrain.cn/task/getUserTaskList").then(res=>{
 							  console.log(res)
 						 })
+						 this.$router.push({name:"List"})
 					}else{
-						  	this.tips ="登录失败请重新登录"
-					      this.showTips()
+						this.tips ="登录失败请重新登录"
+					    this.showTips()
 					}
 			 })			 
 		},

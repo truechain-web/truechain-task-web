@@ -30,9 +30,7 @@
             </div>
           </div>
           <div class="center">{{item.taskStatus}}</div>
-          <router-link to="taskDetail">
-            <div class="right" >{{item.buttonText}}</div>
-          </router-link>
+          <div class="right" @click="buttonClick(item)" >{{item.buttonText}}</div>
         </div>
       </div>
       <div class="loading-container" v-show="hasCode">
@@ -82,6 +80,9 @@
     methods: {
       goback(){
          this.$router.go(-1)
+      },
+      buttonClick(item){
+        this.$router.push({name:"TaskDetail",params:{id:item.id,buttonText:item.buttonText,type:'myTask'}})
       },
       tabs(index) {
       console.log(index,"-----")
