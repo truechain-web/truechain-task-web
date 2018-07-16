@@ -112,7 +112,7 @@
         },
         getDetail(){
             let id = this.$router.history.current.params.id
-            let url = "http://www.phptrain.cn/task/unauth/getTaskInfo?taskId="+id
+            let url = "http://www.phptrain.cn/api/unauth/task/getTaskInfo?taskId="+id
             var param = {
                     taskId:id
                 }
@@ -124,6 +124,7 @@
 					if(res.data.message==="成功"){
 						if(res.data.result){
                             this.data= res.data.result
+                            console.log(this.data)
                         }
 					}else{
 						  
@@ -179,7 +180,7 @@
                 console.log(id)
                 
             }
-            let url = "http://www.phptrain.cn/task/holdTask?taskDetailId="+id
+            let url = "http://www.phptrain.cn/api/task/holdTask?taskDetailId="+id
             var param = {
                 taskDetailId:id
             }
@@ -207,7 +208,7 @@
         },
         commit(){
             let id = this.$router.history.current.params.id
-             let url = "http://www.phptrain.cn/task/commitUserTask?taskId="+id
+             let url = "http://www.phptrain.cn/api/task/commitUserTask?taskId="+id
 				var param = {
                     taskId:id,
                     commitAddress:this.commitAddress,

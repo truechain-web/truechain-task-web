@@ -102,12 +102,12 @@
 			tabs(index) {
 				this.tabIndex = index
 				this.active = index
-				var url = "http://www.phptrain.cn/user/getUserInfo?rewardType=1"
+				var url = "http://www.phptrain.cn/api/user/getUserInfo?rewardType=1"
 				if(index===1){
-				 url = "http://www.phptrain.cn/user/getUserInfo?rewardType=2"
+				 url = "http://www.phptrain.cn/api/user/getUserInfo?rewardType=2"
   			}
       	else if(index===2){
-      		url = "http://www.phptrain.cn/user/getUserInfo?rewardType=3"
+      		url = "http://www.phptrain.cn/api/user/getUserInfo?rewardType=3"
       	}
       	else{
 					this.getIncomeInfo()
@@ -131,7 +131,7 @@
 				})
 			},
 			getIncomeInfo() {
-				let url = 'http://www.phptrain.cn/user/getUserInfo?rewardType=1'
+				let url = 'http://www.phptrain.cn/api/user/getUserInfo?rewardType=1'
 				this.$http.get(url).then((res) => {
 					const result = res.data.result
 					this.level = result.user.level

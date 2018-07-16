@@ -86,7 +86,7 @@
       },
       tabs(index) {
       console.log(index,"-----")
-        let url = "http://www.phptrain.cn/task/getUserTaskList"
+        let url = "http://www.phptrain.cn/api/task/getUserTaskList"
         var param = new FormData()
         console.log(index)
     	if(index===1){
@@ -128,7 +128,7 @@
         this.active = index
       },
       getAllTask(){
-        let url = "http://www.phptrain.cn/task/getUserTaskList"
+        let url = "http://www.phptrain.cn/api/task/getUserTaskList"
         this.$http.post(url,{
           headers: {
             'Content-Type': 'application/json'

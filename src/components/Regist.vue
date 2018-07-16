@@ -89,7 +89,7 @@
 				var sum=this.clocks;
 				var _this = this
 				var dom =  _this.$refs.clock
-				let url = 'http://www.phptrain.cn/unauth/account/verifyCode/'+this.phone
+				let url = 'http://www.phptrain.cn/api/unauth/account/verifyCode/'+this.phone
 				this.$http.get(url).then((res)=>{
 						console.log(res)
 						this.callbackcode = res.data.result
@@ -131,7 +131,7 @@
 								param.append("mobile",that.phone)
 								param.append("verifyCode",that.code)
 								// 将内容发送到接口
-								let urls = "http://www.phptrain.cn/unauth/account/register"
+								let urls = "http://www.phptrain.cn/api/unauth/account/register"
 							//  let params = {
 							// 		name: that.uname,
 							// 		wxNickName: that.wechatName,

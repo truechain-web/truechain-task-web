@@ -49,7 +49,7 @@ export default {
 					 this.showTips()
 					 return
 			 }
-			 let url = "http://www.phptrain.cn/unauth/account/login"
+			 let url = "http://www.phptrain.cn/api/unauth/account/login"
 				var param = new FormData()
 				param.append("mobile",this.phone)
 				param.append("verifyCode",this.code)
@@ -65,7 +65,7 @@ export default {
 						 this.showTips()
 						 let token = JSON.stringify(res.data.result)
 						 localStorage.setItem("token",token)
-						 this.$http.post("http://www.phptrain.cn/task/getUserTaskList").then(res=>{
+						 this.$http.post("http://www.phptrain.cn/api/task/getUserTaskList").then(res=>{
 							  console.log(res)
 						 })
 						 this.$router.push({name:"List"})
@@ -87,7 +87,7 @@ export default {
 				var _this = this;
 				var dom =  _this.$refs.clock;
 				// 开始发送验证码：
-				let url = 'http://www.phptrain.cn/unauth/account/verifyCode/'+this.phone
+				let url = 'http://www.phptrain.cn/api/unauth/account/verifyCode/'+this.phone
 				this.$http.get(url).then((res)=>{
 						console.log(res)
 				}).catch((err)=>{

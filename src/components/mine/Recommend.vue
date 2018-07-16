@@ -43,7 +43,7 @@ import Loading from '../../base/loading/Loading'
          this.$router.go(-1)
       },
       getRecommendInfo(){
-        var url='http://www.phptrain.cn/user/getRecommendUserList'
+        var url='http://www.phptrain.cn/api/user/getRecommendUserList'
         this.$http.get(url).then((res)=>{
            if(res.data.code&&res.data){
              if(res.data.code){

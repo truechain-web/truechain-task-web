@@ -8,39 +8,47 @@
       <div class="space"></div>
     </div> -->
     <list-header @change="hanleSelectTack" :taskList="taskList" @fetch="handleFetch"></list-header>
-    <div class="list border-bottom" ref="wrapper">
-      <div>
-        <div class="item  border-bottom" v-for="item of tempTaskList">
-          <div class="left">
-            <img src="../../assets/img/task-logo.png" alt="" class="tackImg" />
-            <div class="task-rank">
-              <p class="name">{{item.name}}</p>
-              <p class="rank">难度：<span>{{item.level}}级</span></p>
-            </div>
+      <scroll class="wrapper" ref="wrapper"
+          :data="tempTaskList"  :totalSize="totalPages" :pageNum="pageSize"  
+          :pulldown="pulldown" :pullup="pullup" 
+          @pulldown="getTaskInfo" @scrollToEnd="loadMore"> 
+          <div class="list" >
+              <div class="item  border-bottom" v-for="item of tempTaskList">
+                <div class="left">
+                  <img src="../../assets/img/task-logo.png" alt="" class="tackImg" />
+                  <div class="task-rank">
+                    <p class="name">{{item.name}}</p>
+                    <p class="rank">难度：<span>{{item.level}}级</span></p>
+                  </div>
+                </div>
+                <div class="center">{{item.rewardNum}}True</div>
+                <div class="right"  @click="buttonClick(item.id)" >抢任务</div>
+              </div>
+             
           </div>
-          <div class="center">{{item.rewardNum}}True</div>
-          <div class="right"  @click="buttonClick(item.id)" >抢任务</div>
-        </div>
-        <div class="no-data" v-show="hasData">没有找到符合条件的任务</div>
-      </div>
-      <div class="loading-container" v-show="hasCode">
-        <loading></loading>
-      </div>
-    </div>
+           <div class="no-data" v-show="hasData">没有找到符合条件的任务</div>
+           <div style="height: 50px;"></div>
+          
+            
+     </scroll>
+     <div class="loading-container" v-show="hasCode">
+              <loading></loading>
+            </div>
     <tabs></tabs>
   </div>
 </template>
 <script>
-  import Bscroll from 'better-scroll'
+import Bscroll from 'better-scroll'
   import ListHeader from './Header'
   import Tabs from '../tab/Tab'
+  import Scroll from '../scroll/Scroll'
   import Loading from '../../base/loading/Loading'
   export default {
     name: 'List',
     components: {
       ListHeader,
       Tabs,
-      Loading
+      Loading,Scroll
     },
     data() {
       return {
@@ -48,9 +56,12 @@
         taskList: [], //原始列表
         tempTaskList: [], //临时列表
         pageIndex:1,
-        pageSize:10,
+        pageSize:20,
         hasData:false,
-        hasCode:true
+        hasCode:true,
+        pulldown: true,
+        pullup:true,
+        totalPages:1
       }
     },
 
@@ -59,7 +70,7 @@
          this.$router.go(-1)
       },
       getTaskInfo() {
-        let url = "http://www.phptrain.cn/task/unauth/getTaskPage"
+        let url = "http://www.phptrain.cn/api/unauth/task/getTaskPage"
 				var param = new FormData()
 				param.append("pageIndex",this.pageIndex)
 				param.append("pageSize",this.pageSize)
@@ -75,15 +86,32 @@
             const data=res.data.result
             this.taskList=data.content
             this.tempTaskList=data.content
-               this.$nextTick(()=>{
-                this._initScroll();
-              })
+            this.totalPages=Math.ceil(this.tempList.length/this.pageSize)
+            console.log(this.tempTaskList)
+//             this.$nextTick(()=>{
+//              this._initScroll();
+//            })
           }
         })
       },
-       _initScroll(){
-        this.scroll = new Bscroll(this.$refs.wrapper)
+      loadMore(){
+        let url = "http://www.phptrain.cn/api/unauth/task/getTaskPage"
+        this.pageIndex++
+        console.log('我是下拉0000000000000000000')
+        var param = new FormData()
+        param.append("pageIndex",this.pageIndex)
+        param.append("pageSize",this.pageSize)
+        this.$http.post(url,param,{
+          headers: {
+            'Content-Type': 'application/json'
+          }
+        }).then((res)=>{
+          console.log(res)
+        })
       },
+//     _initScroll(){
+//      this.scroll = new Bscroll(this.$refs.wrapper)
+//    },
       handleFetch(){
         this.hasData=false
         this.getTaskInfo()
@@ -120,7 +148,7 @@
            reward	 =2
         }
         // 发送请求
-        let url =  "http://www.phptrain.cn/task/unauth/getTaskPage"
+        let url =  "http://www.phptrain.cn/api/unauth/task/getTaskPage"
         var param = new FormData()
         param.append("pageIndex",this.pageIndex)
         param.append("pageSize",this.pageSize)
@@ -143,8 +171,9 @@
             this.hasData=false
             this.taskList=data.content
             this.tempTaskList=data.content
+            console.log(data.content)
            this.$nextTick(()=>{
-              this._initScroll();
+//            this._initScroll();
             })
           }
           if(data.content==''){
@@ -195,7 +224,7 @@
     margin: 10px 0;
     font-size: 14px;
   }
-  .list {
+  .wrapper {
     position: absolute;
     top: 60px;
     left: 0;
