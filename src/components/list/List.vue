@@ -9,7 +9,7 @@
     </div> -->
     <list-header @change="hanleSelectTack" :taskList="taskList" @fetch="handleFetch"></list-header>
       <scroll class="wrapper" ref="wrapper"
-          :data="tempTaskList"  :totalSize="totalPages" :pageNum="pageSize"  
+          :data="tempTaskList"  :totalSize="totalPages" :pageIndex="pageIndex"  
           :pulldown="pulldown" :pullup="pullup" 
           @pulldown="getTaskInfo" @scrollToEnd="loadMore"> 
           <div class="list" >
@@ -76,9 +76,12 @@ import Bscroll from 'better-scroll'
 				param.append("pageSize",this.pageSize)
         this.$http.post(url,param,{
           headers: {
+            agent:'',
+            token:'',
             'Content-Type': 'application/json'
           }
         }).then((res)=>{
+          console.log(res)
           if(res.data.code&&res.data){
             if(res.data.code){
               this.hasCode=false
@@ -86,8 +89,7 @@ import Bscroll from 'better-scroll'
             const data=res.data.result
             this.taskList=data.content
             this.tempTaskList=data.content
-            this.totalPages=Math.ceil(this.tempList.length/this.pageSize)
-            console.log(this.tempTaskList)
+            this.totalPages=data.totalPages
 //             this.$nextTick(()=>{
 //              this._initScroll();
 //            })
@@ -97,7 +99,6 @@ import Bscroll from 'better-scroll'
       loadMore(){
         let url = "http://www.phptrain.cn/api/unauth/task/getTaskPage"
         this.pageIndex++
-        console.log('我是下拉0000000000000000000')
         var param = new FormData()
         param.append("pageIndex",this.pageIndex)
         param.append("pageSize",this.pageSize)
@@ -106,12 +107,15 @@ import Bscroll from 'better-scroll'
             'Content-Type': 'application/json'
           }
         }).then((res)=>{
-          console.log(res)
+            const data=res.data.result
+            var result=data.content
+            this.tempTaskList=this.taskList.concat(result)
+             if(this.pageIndex==this.totalPages){
+               this.pullup=false
+             }
         })
       },
-//     _initScroll(){
-//      this.scroll = new Bscroll(this.$refs.wrapper)
-//    },
+      
       handleFetch(){
         this.hasData=false
         this.getTaskInfo()

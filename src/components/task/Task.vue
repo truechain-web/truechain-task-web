@@ -88,6 +88,7 @@
       console.log(index,"-----")
         let url = "http://www.phptrain.cn/api/task/getUserTaskList"
         var param = new FormData()
+        var token=JSON.parse(localStorage.getItem("token"))
         console.log(index)
     	if(index===1){
   			status=0
@@ -104,7 +105,9 @@
         }
       	this.$http.post(url,param,{
           headers: {
-            'Content-Type': 'application/json'
+            'Content-Type': 'application/json',
+             'Agent': token.agent,
+            'Token': token.token
           }
         }).then((res)=>{
              if(res.data.code&&res.data){
@@ -128,10 +131,14 @@
         this.active = index
       },
       getAllTask(){
+   
+        var token=JSON.parse(localStorage.getItem("token"))
         let url = "http://www.phptrain.cn/api/task/getUserTaskList"
         this.$http.post(url,{
           headers: {
-            'Content-Type': 'application/json'
+            'Content-Type': 'application/json',
+            'Agent': token.agent,
+            'Token': token.token
           }
         }).then((res)=>{
            var _this = this;

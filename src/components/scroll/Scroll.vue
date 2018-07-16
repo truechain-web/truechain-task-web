@@ -118,10 +118,12 @@ export default {
          totalSize:{
             type: Number,
          },
-         pageNum:{
+         pageIndex:{
             type: Number,
              default: 1
-         }
+         },
+      
+         
     },
     data() {
         return {
@@ -202,8 +204,7 @@ export default {
             if (this.pullup) {
                 this.scroll.on('scrollEnd', () => {
                     // 滚动到底部
-                    console.log(this.pageNum,this.totalSize)
-                    if (this.scroll.y <= (this.scroll.maxScrollY + 50)  &&  this.pageNum<this.totalSize) {
+                    if (this.scroll.y <= (this.scroll.maxScrollY + 50)  &&  this.pageIndex<=this.totalSize) {
                         setTimeout(() => {
                             // 重置提示信息
                             this.pullupTip = {
@@ -211,7 +212,7 @@ export default {
                                 rotate: ''    // icon-rotate
                             }
                             this.$emit('scrollToEnd');
-                            if(this.pageNum==this.totalSize){
+                            if(this.pageIndex==this.totalSize){
                                this.pullupTip = {
                                 text: '没有更多',     // 松开立即刷新
                                 rotate: ''    // icon-rotate

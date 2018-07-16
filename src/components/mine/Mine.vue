@@ -103,6 +103,8 @@
 				this.tabIndex = index
 				this.active = index
 				var url = "http://www.phptrain.cn/api/user/getUserInfo?rewardType=1"
+			  var token=JSON.parse(localStorage.getItem("token"))
+				
 				if(index===1){
 				 url = "http://www.phptrain.cn/api/user/getUserInfo?rewardType=2"
   			}
@@ -112,7 +114,13 @@
       	else{
 					this.getIncomeInfo()
         }
-				this.$http.get(url).then((res) => {
+				this.$http.get(url,{
+          headers: {
+            'Content-Type': 'application/json',
+            'Agent': token.agent,
+            'Token': token.token
+          }
+        }).then((res) => {
 				  if(res.data.code && res.data){
 					  const result = res.data.result
 						var dataList=result.userAccount.accountDetails
@@ -131,8 +139,17 @@
 				})
 			},
 			getIncomeInfo() {
+			  
+			  var token=JSON.parse(localStorage.getItem("token"))
+			   console.log(token)
 				let url = 'http://www.phptrain.cn/api/user/getUserInfo?rewardType=1'
-				this.$http.get(url).then((res) => {
+				this.$http.get(url,{
+          headers: {
+            'Content-Type': 'application/json',
+            'Agent': token.agent,
+            'Token': token.token
+          }
+        }).then((res) => {
 					const result = res.data.result
 					this.level = result.user.level
 					this.recommendPeople = result.recommendPeople
