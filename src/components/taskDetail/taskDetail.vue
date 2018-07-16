@@ -112,7 +112,7 @@
         },
         getDetail(){
             let id = this.$router.history.current.params.id
-            let url = "http://www.phptrain.cn/api/unauth/task/getTaskInfo?taskId="+id
+            let url = "http://www.phptrain.cn/task/unauth/getTaskInfo?taskId="+id
             var param = {
                     taskId:id
                 }
@@ -124,7 +124,6 @@
 					if(res.data.message==="成功"){
 						if(res.data.result){
                             this.data= res.data.result
-                            console.log(this.data)
                         }
 					}else{
 						  
@@ -165,8 +164,9 @@
 		},
         holdTask(item){
             if(!localStorage.token){
-                this.tips ="您尚未注册，请先注册"
+                this.tips ="您尚未登录，请先登录"
 				this.showTips()
+                this.$router.push({path:"Login"})
 				return 
             } 
             if(item && item.isLevelEnough ==='0'){
@@ -177,10 +177,9 @@
             let id = this.$router.history.current.params.id
             if(item.id){
                 id = item.id
-                console.log(id)
                 
             }
-            let url = "http://www.phptrain.cn/api/task/holdTask?taskDetailId="+id
+            let url = "http://www.phptrain.cn/task/holdTask?taskDetailId="+id
             var param = {
                 taskDetailId:id
             }
@@ -208,7 +207,7 @@
         },
         commit(){
             let id = this.$router.history.current.params.id
-             let url = "http://www.phptrain.cn/api/task/commitUserTask?taskId="+id
+             let url = "http://www.phptrain.cn/task/commitUserTask?taskId="+id
 				var param = {
                     taskId:id,
                     commitAddress:this.commitAddress,
