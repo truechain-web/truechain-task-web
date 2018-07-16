@@ -190,7 +190,7 @@
   }
   .header {
     position: fixed;
-    top: 60px;
+    // top: 60px;
     left: 0;
     right: 0;
     height: 50px;
@@ -243,7 +243,7 @@
   .select-wrapper {
     background: #fff;
     z-index: 80;
-    top: 120px;
+    top: 60px;
     position: absolute;
     left: 0;
     right: 0;
@@ -274,7 +274,7 @@
     left: 0;
     right: 0;
     bottom: 60px;
-    top: 110px;
+    top: 50px;
     z-index: 1;
     overflow: hidden;
     .space {

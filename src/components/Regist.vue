@@ -150,7 +150,7 @@
 											// 最后提示成功注册
 											that.tips = "注册成功,请前去登录"
 											that.showTips(()=>{
-												 that.$router.push({path:"/"})
+												 that.$router.push({path:"/login"})
 											})
 
 									}else{

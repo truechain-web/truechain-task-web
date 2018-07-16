@@ -1,12 +1,12 @@
 <template>
   <div>
-    <div class="header-top">
+    <!-- <div class="header-top">
       <div class="header-wrapper">
       	<div class="img-wrapper"  @click="goback"><img src="../../assets/img/back.png" alt="" /></div>
        <div>我的任务</div>
       </div>
       <div class="space"></div>
-    </div>
+    </div> -->
     <div>
         <ul class="navBar">
           <li class="item border-right" @click="tabs(index)" v-for="(item,index) of navs" :class="{active:active==index}">
@@ -211,7 +211,7 @@
 .list{
    overflow: hidden;
    position: absolute;
-   top: 120px;
+   top: 60px;
     left: 0;
     right: 0;
     bottom: 60px;
@@ -261,13 +261,13 @@
 
   .space_{
      position: fixed;
-    top:110px;
+    top:50px;
     left: 0;
     right: 0;
   }
   .navBar {
     position: fixed;
-    top:60px;
+    // top:60px;
     left: 0;
     right: 0;
     height: 50px;

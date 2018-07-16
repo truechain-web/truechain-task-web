@@ -1,12 +1,12 @@
 <template>
 	<div>
-		<div class="header-top">
+		<!-- <div class="header-top">
 			<div class="header-wrapper">
 				<div class="img-wrapper" @click="goback"><img src="../../assets/img/back.png" alt="" /></div>
 				<div>个人中心</div>
 			</div>
 			<div class="space"></div>
-		</div>
+		</div> -->
 
 		<div class="header">
 			<div class="left">
@@ -185,7 +185,7 @@
 	
 	.space_ {
 		position: fixed;
-		top: 234px;
+		top: 185px;
 		left: 0;
 		right: 0;
 	}
@@ -213,7 +213,7 @@
 		left: 0;
 		right: 0;
 		bottom: 60px;
-		top: 244px;
+		top: 200px;
 		.tabConWrapper {
 			display: flex;
 			padding: 0 15px;

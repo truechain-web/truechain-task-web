@@ -13,9 +13,14 @@ Vue.use(Router)
 
 export default new Router({
 	linkActiveClass: 'active',
+	// mode :"history",
   routes: [
+		{
+			path:"/",
+			redirect:"/list"
+		},
     {
-      path: '/',
+      path: '/login',
       name: 'Login',
 			component: Login,
 			meta:{
@@ -40,26 +45,39 @@ export default new Router({
 		{
       path: '/list',
       name: 'List',
-      component: List
+			component: List,
+			meta:{
+				title:"任务列表"
+		  }
     },
     {
       path: '/task',
       name: 'Task',
-      component: Task
+			component: Task,
+			meta:{
+				title:"我的任务"
+		  }
+			
     },
     {
       path: '/mine',
       name: 'Mine',
-      component: Mine
+			component: Mine,
+			meta:{
+				title:"个人中心"
+		  }
     },
     {
       path: '/recommend',
       name: 'Recommend',
-      component: Recommend
+			component: Recommend,
+			meta:{
+				title:"推荐记录"
+		  }
     },{
       path: '/taskDetail:id',
       name: 'TaskDetail',
-      component: TaskDetail
+			component: TaskDetail
     },
     
   ]

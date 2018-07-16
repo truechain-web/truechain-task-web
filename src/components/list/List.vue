@@ -1,12 +1,12 @@
 <template>
   <div>
-     <div class="header-top">
+     <!-- <div class="header-top">
       <div class="header-wrapper">
         <div class="img-wrapper"  @click="goback"><img src="../../assets/img/back.png" alt="" /></div>
        <div>任务列表</div>
       </div>
       <div class="space"></div>
-    </div>
+    </div> -->
     <list-header @change="hanleSelectTack" :taskList="taskList" @fetch="handleFetch"></list-header>
     <div class="list border-bottom" ref="wrapper">
       <div>
@@ -197,7 +197,7 @@
   }
   .list {
     position: absolute;
-    top: 120px;
+    top: 60px;
     left: 0;
     right: 0;
     bottom: 60px;

@@ -1,24 +1,18 @@
 <template>
   <div>
     <footer class="footer border-top">
-      <div class="item">
-        <router-link to="/List" tag="div" class="tab-item">
-            <span class="iconfont ">&#xe76a;</span>
-            <p class="name">任务列表</p>
-        </router-link>
-      </div>
-      <div class="item">
-        <router-link to="/Task" tag="div" class="tab-item">
-            <span class="iconfont">&#xe63f;</span>
-            <p class="name">我的任务</p>
-        </router-link>
-      </div>
-      <div class="item">
-        <router-link to="/Mine" tag="div" class="tab-item">
-            <span class="iconfont">&#xe614;</span>
-            <p class="name">个人中心</p>
-        </router-link>
-      </div>
+      <router-link to="/List" tag="div" class="tab-item">
+          <span class="iconfont ">&#xe76a;</span>
+          <p class="name">任务列表</p>
+      </router-link>
+      <router-link to="/Task" tag="div" class="tab-item">
+          <span class="iconfont">&#xe63f;</span>
+          <p class="name">我的任务</p>
+      </router-link>
+      <router-link to="/Mine" tag="div" class="tab-item">
+          <span class="iconfont">&#xe614;</span>
+          <p class="name">个人中心</p>
+      </router-link>
     </footer>
   </div>
 
@@ -39,7 +33,7 @@
     height: 60px;
     z-index: 99;
     background: #fff;
-    .item {
+    .tab-item{
       float: left;
       width: 33.3333%;
       text-align: center;
@@ -52,12 +46,12 @@
         color: #A3A5A8;
         font-size: 22px;
       }
-    }
-    .active {
+      &.active{
         .name,
         .iconfont {
           color: #02ABEE;
         }
       }
+    }
   }
 </style>
