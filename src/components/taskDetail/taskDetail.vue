@@ -166,7 +166,10 @@
             if(!localStorage.token){
                 this.tips ="您尚未登录，请先登录"
 				this.showTips()
-                this.$router.push({path:"Login"})
+        var _this=this
+                setTimeout(function(){
+                    _this.$router.push({path:"Login"})    
+                },1500)
 				return 
             } 
             if(item && item.isLevelEnough ==='0'){
@@ -196,7 +199,7 @@
                     var _this=this
                     setTimeout(function(){
                         _this.$router.push({path:"Task"})    
-                       },2000)
+                       },1500)
                     return 
                     
                 }else{
