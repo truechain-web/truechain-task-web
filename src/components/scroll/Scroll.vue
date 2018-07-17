@@ -122,7 +122,10 @@ export default {
             type: Number,
              default: 1
          },
-      
+        last:{
+            type: Boolean,
+            default: false
+        }
          
     },
     data() {
@@ -177,13 +180,14 @@ export default {
                                 text: '下拉刷新',     // 松开立即刷新
                                 rotate: ''    // icon-rotate
                             }
+                            
                         }
+                         
                     }
 
                     if (this.pullup) {
                         //上拉加载
                       if (pos.y < -100) {
-                        console.log(pos.y)
                           this.pullupTip = {
                                 text: '',
                                 rotate: 'icon-rotate'
@@ -204,7 +208,7 @@ export default {
             if (this.pullup) {
                 this.scroll.on('scrollEnd', () => {
                     // 滚动到底部
-                    if (this.scroll.y <= (this.scroll.maxScrollY + 50)  &&  this.pageIndex<=this.totalSize) {
+                    if (this.scroll.y <= (this.scroll.maxScrollY + 50)  &&  this.pageIndex<this.totalSize) {
                         setTimeout(() => {
                             // 重置提示信息
                             this.pullupTip = {
@@ -212,13 +216,13 @@ export default {
                                 rotate: ''    // icon-rotate
                             }
                             this.$emit('scrollToEnd');
-                            if(this.pageIndex==this.totalSize){
-                               this.pullupTip = {
-                                text: '没有更多',     // 松开立即刷新
-                                rotate: ''    // icon-rotate
+                            if(this.pageIndex==this.totalSize&& this.last){
+                                 this.pullupTip = {
+                                  text: '没有更多',     // 松开立即刷新
+                                  rotate: ''    // icon-rotate
+                              }
                             }
-                            }
-                        },1000);
+                        },2500);
                         
                     }
                 });
@@ -226,7 +230,7 @@ export default {
 
             // 是否派发顶部下拉事件，用于下拉刷新
             if (this.pulldown) {
-                this.scroll.on('touchend', (pos) => {
+                this.scroll.on('touchEnd', (pos) => {
                     // 下拉动作
                     if (pos.y > 70) {
                         setTimeout(() => {
@@ -238,7 +242,7 @@ export default {
                         },2600);
                         this.$emit('pulldown');
                     }
-                    this.scroll.refresh()
+//                  this.scroll.refresh()
 
                 });
             }

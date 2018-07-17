@@ -114,13 +114,7 @@
       	else{
 					this.getIncomeInfo()
         }
-				this.$http.get(url,{
-          headers: {
-            'Content-Type': 'application/json',
-            'Agent': token.agent,
-            'Token': token.token
-          }
-        }).then((res) => {
+				this.$http.get(url).then((res) => {
 				  if(res.data.code && res.data){
 					  const result = res.data.result
 						var dataList=result.userAccount.accountDetails
@@ -139,17 +133,8 @@
 				})
 			},
 			getIncomeInfo() {
-			  
-			  var token=JSON.parse(localStorage.getItem("token"))
-			   console.log(token)
 				let url = 'http://www.phptrain.cn/api/user/getUserInfo?rewardType=1'
-				this.$http.get(url,{
-          headers: {
-            'Content-Type': 'application/json',
-            'Agent': token.agent,
-            'Token': token.token
-          }
-        }).then((res) => {
+				this.$http.get(url).then((res) => {
 					const result = res.data.result
 					this.level = result.user.level
 					this.recommendPeople = result.recommendPeople
@@ -159,14 +144,17 @@
 					this.navs[0].num = result.userAccount.trueReward
 					if(res.data.code && res.data) {
 						var dataList=result.userAccount.accountDetails
-						dataList.forEach(function(list){
-							if(list.rewardResource === 1) {
-								list.rewardResource = '任务'
-							}
-							if(list.rewardResource === 2) {
-								list.rewardResource = '推荐'
-							}
-						})
+						if(result.userAccount.accountDetails){
+						    dataList.forEach(function(list){
+                if(list.rewardResource === 1) {
+                  list.rewardResource = '任务'
+                }
+                if(list.rewardResource === 2) {
+                  list.rewardResource = '推荐'
+                }
+              })
+						}
+					
 						this.tabContents=dataList
 					}
 				}).catch((err) => {
@@ -177,7 +165,6 @@
 				this.taskType = incomeType
 				let result = []
 				for(let i = 0; i < this.tabContents.length; i++) {
-					console.log(this.tabContents[i].type)
 					if(this.tabContents[i].type == this.taskType) {
 						result.push(this.tempContents[i])
 					}

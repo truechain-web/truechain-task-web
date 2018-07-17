@@ -9,13 +9,13 @@
     </div> -->
     <list-header @change="hanleSelectTack" :taskList="taskList" @fetch="handleFetch"></list-header>
       <scroll class="wrapper" ref="wrapper"
-          :data="tempTaskList"  :totalSize="totalPages" :pageIndex="pageIndex"  
+          :data="tempTaskList"  :totalSize="totalPages" :pageIndex="pageIndex"  :last="Islast"
           :pulldown="pulldown" :pullup="pullup" 
           @pulldown="getTaskInfo" @scrollToEnd="loadMore"> 
           <div class="list" >
               <div class="item  border-bottom" v-for="item of tempTaskList">
                 <div class="left">
-                  <img src="../../assets/img/task-logo.png" alt="" class="tackImg" />
+                  <img :src="item.iconPath" alt="" class="tackImg" />
                   <div class="task-rank">
                     <p class="name">{{item.name}}</p>
                     <p class="rank">难度：<span>{{item.level}}级</span></p>
@@ -61,7 +61,8 @@ import Bscroll from 'better-scroll'
         hasCode:true,
         pulldown: true,
         pullup:true,
-        totalPages:1
+        totalPages:1,
+        Islast:''
       }
     },
 
@@ -72,16 +73,10 @@ import Bscroll from 'better-scroll'
       getTaskInfo() {
         let url = "http://www.phptrain.cn/api/unauth/task/getTaskPage"
 				var param = new FormData()
+				this.pageIndex=1
 				param.append("pageIndex",this.pageIndex)
 				param.append("pageSize",this.pageSize)
-        this.$http.post(url,param,{
-          headers: {
-            agent:'',
-            token:'',
-            'Content-Type': 'application/json'
-          }
-        }).then((res)=>{
-          console.log(res)
+        this.$http.post(url,param).then((res)=>{
           if(res.data.code&&res.data){
             if(res.data.code){
               this.hasCode=false
@@ -90,9 +85,7 @@ import Bscroll from 'better-scroll'
             this.taskList=data.content
             this.tempTaskList=data.content
             this.totalPages=data.totalPages
-//             this.$nextTick(()=>{
-//              this._initScroll();
-//            })
+            this.last=data.last
           }
         })
       },
@@ -112,7 +105,10 @@ import Bscroll from 'better-scroll'
             this.tempTaskList=this.taskList.concat(result)
              if(this.pageIndex==this.totalPages){
                this.pullup=false
-             }
+               this.$nextTick(() => {
+                  this.hasCode = false;
+                })
+            }
         })
       },
       
@@ -175,10 +171,6 @@ import Bscroll from 'better-scroll'
             this.hasData=false
             this.taskList=data.content
             this.tempTaskList=data.content
-            console.log(data.content)
-           this.$nextTick(()=>{
-//            this._initScroll();
-            })
           }
           if(data.content==''){
              this.hasData=true

@@ -23,7 +23,7 @@
        <div>
         <div class="item  border-bottom" v-for="(item,index) of TaskList" :key="index" >
           <div class="left">
-           <img src="../../assets/img/task-logo.png" alt="" class="tackImg" />
+           <img :src="item.iconPath" alt="" class="tackImg" />
             <div class="task-rank">
               <p class="name">{{item.name}}</p>
               <p class="rank">难度：<span>{{item.level}}</span></p>
@@ -85,11 +85,8 @@
         this.$router.push({name:"TaskDetail",params:{id:item.id,buttonText:item.buttonText,type:'myTask'}})
       },
       tabs(index) {
-      console.log(index,"-----")
         let url = "http://www.phptrain.cn/api/task/getUserTaskList"
         var param = new FormData()
-        var token=JSON.parse(localStorage.getItem("token"))
-        console.log(index)
     	if(index===1){
   			status=0
   		}
@@ -103,18 +100,11 @@
       	if(status!==2){
           param.append("taskStatus",status)
         }
-      	this.$http.post(url,param,{
-          headers: {
-            'Content-Type': 'application/json',
-             'Agent': token.agent,
-            'Token': token.token
-          }
-        }).then((res)=>{
+      	this.$http.post(url,param).then((res)=>{
              if(res.data.code&&res.data){
         	   const data=res.data.result
           	 const dataList=data.taskList
           	 dataList.forEach(function(list){
-          	 console.log(list.taskStatus)
 							if(list.taskStatus === 0) {
 								list.taskStatus = '进行中'
 								list.buttonText='提交'
@@ -131,16 +121,8 @@
         this.active = index
       },
       getAllTask(){
-   
-        var token=JSON.parse(localStorage.getItem("token"))
         let url = "http://www.phptrain.cn/api/task/getUserTaskList"
-        this.$http.post(url,{
-          headers: {
-            'Content-Type': 'application/json',
-            'Agent': token.agent,
-            'Token': token.token
-          }
-        }).then((res)=>{
+        this.$http.post(url).then((res)=>{
            var _this = this;
           if(res.data.code&&res.data){
             if(res.data.code){
@@ -148,7 +130,6 @@
             }
           	const data=res.data.result
           	const dataList=data.taskList
-          	
 						dataList.forEach(function(list){
 							if(list.taskStatus === 0) {
 								list.taskStatus = '进行中'

@@ -112,7 +112,7 @@
         },
         getDetail(){
             let id = this.$router.history.current.params.id
-            let url = "http://www.phptrain.cn/task/unauth/getTaskInfo?taskId="+id
+            let url = "http://www.phptrain.cn/api/unauth/task/getTaskInfo?taskId="+id
             var param = {
                     taskId:id
                 }
@@ -182,7 +182,7 @@
                 id = item.id
                 
             }
-            let url = "http://www.phptrain.cn/task/holdTask?taskDetailId="+id
+            let url = "http://www.phptrain.cn/api/task/holdTask?taskDetailId="+id
             var param = {
                 taskDetailId:id
             }
