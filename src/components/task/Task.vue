@@ -82,6 +82,7 @@
          this.$router.go(-1)
       },
       buttonClick(item){
+        console.log(111111111111)
         this.$router.push({name:"TaskDetail",params:{id:item.id,buttonText:item.buttonText,type:'myTask'}})
       },
       tabs(index) {

@@ -134,7 +134,7 @@
         getUserTaskInfo(){
              let id = this.$router.history.current.params.id
              console.log(id)
-             let url = "http://www.phptrain.cn/task/getUserTaskInfo?taskId="+id
+             let url = "http://www.phptrain.cn/api/task/getUserTaskInfo?taskId="+id
 				var param = {
                     taskId:id
                 }
@@ -166,7 +166,7 @@
             if(!localStorage.token){
                 this.tips ="您尚未登录，请先登录"
 				this.showTips()
-        var _this=this
+                var _this=this
                 setTimeout(function(){
                     _this.$router.push({path:"Login"})    
                 },1500)
@@ -210,7 +210,7 @@
         },
         commit(){
             let id = this.$router.history.current.params.id
-             let url = "http://www.phptrain.cn/task/commitUserTask?taskId="+id
+             let url = "http://www.phptrain.cn/api/task/commitUserTask?taskId="+id
 				var param = {
                     taskId:id,
                     commitAddress:this.commitAddress,
