@@ -9,104 +9,168 @@
       </div>
       <div class="search-wrapper" v-show="!show">
         <span class="search iconfont">&#xe741;</span>
-        <input type="text" class="search-input" v-model="keyword" />
+        <input type="text" class="search-input" v-model.trim="keyword" placeholder="请输入任务名称"/>
         <span @click="cancelSearch" class="cancel">取消</span>
       </div>
       <div class="space"></div>
     </div>
-    <div class="search-content" v-show="keyword" ref="wrapper">
-      <div>
-        <div class="item" v-for="item of list">
-          <div class="left">
-            <img :src="item.imgUrl" alt="" class="tackImg" />
-            <div class="task-rank">
-              <p class="name">{{item.name}}</p>
-              <p class="rank">难度：<span>{{item.rank}}</span></p>
-            </div>
+     <scroll class="search-content" ref="wrapper"
+          :data="tempTaskList"  :totalSize="totalPages" :pageIndex="pageIndex"  :last="Islast"
+          :pulldown="pulldown" :pullup="pullup" 
+          @pulldown="getTaskInfo" @scrollToEnd="loadMore" v-show="keyword"> 
+          <div class="list" >
+              <div class="item  border-bottom" v-for="item of tempTaskList">
+                <div class="left">
+                  <img :src="item.iconPath" alt="" class="tackImg" />
+                  <div class="task-rank">
+                    <p class="name">{{item.name}}</p>
+                    <p class="rank">难度：<span>{{item.level}}级</span></p>
+                  </div>
+                </div>
+                <div class="center">{{item.rewardNum}}True</div>
+                <div class="right"  @click="buttonClick(item.id)" >抢任务</div>
+              </div>
+             
           </div>
-          <div class="center">{{item.number}}True</div>
-          <div class="right">抢任务</div>
-
-        </div>
-        <div class="space"></div>
-      </div>
-
-      <div class="search-item" v-show="hasnoData">没有找到匹配数据</div>
-    </div>
-    <ul class="select-wrapper" v-show="isShow">
+           <div class="no-data" v-show="hasnoData">没有找到符合条件的任务</div>
+           <div style="height: 50px;" ></div>
+          
+     </scroll>
+      
+      
+       <ul class="select-wrapper" v-show="isShow">
       <li class="border-bottom select-item" :class="{ active: active==index }" v-for="(item,index) of itemList" :key="item.id" @click="handleClick(index,item.name)">{{item.name}}</li>
     </ul>
     <div class="mask" v-show="showMask">
+    </div>
+   
 
     </div>
-  </div>
+
 
 </template>
 
 <script>
-  import Bscroll from 'better-scroll'
+  import Bscroll from 'better-scroll' 
+  import Scroll from '../scroll/Scroll' 
   export default {
     name: "ListHeader",
+    components: {
+      Scroll
+    },
     data() {
       return {
-        isShow: true,
-        show: true,
-        itemList: [],
-        lastItemIndex: -1,
-        keyword: "",
+        isShow: true,//下拉是否显示
+        show: true, //搜索框是否显示
+        itemList: [], //下拉列表选项集合
+        lastItemIndex: -1,//是否第一次点击下拉
+        keyword: "", //搜索框关键字
         timer: null,
-        list: [],
-        active: 0,
+        active: 0, 
         showMask: false,
+        pageIndex:1,
+        pageSize:20,
+        tempTaskList: [], //列表数组
+        pulldown: true, //是否下拉
+        pullup:true,  //是否上拉
+        totalPages:1,//列表总页数
+        Islast:'' //列表是不是最后一页
       };
     },
     props: {
       taskList: Array
     },
     computed: {
+      //如果列表没有数据显示没有数据
       hasnoData() {
-        return !this.list.length;
+        return !this.tempTaskList.length;
       }
     },
     
     watch: {
+      //根据搜索框文字变化请求数据
       keyword() {
         if(this.timer) {
           clearTimeout(this.timer);
         }
         if(!this.keyword) {
-          this.list = [];
+          this.tempTaskList = [];
         }
         this.timer = setTimeout(() => {
-          const result = [];
-          console.log(this.taskList)
-          for(let i in this.taskList) {
-            if(this.taskList[i].name.indexOf(this.keyword) >= 0) {
-              result.push(this.taskList[i]);
-            }
-          }
-          this.list = result;
-          this.$nextTick(()=>{
-              this._initScroll();
-            })
+          this.getTaskInfo()
         }, 100);
       }
     },
     methods: {
-      _initScroll(){
-        this.scroll = new Bscroll(this.$refs.wrapper)
+      //点击抢任务按钮，跳转
+       buttonClick (id){
+        this.$router.push({name:"TaskDetail",params:{id:id,type:'robTask'}})
       },
+      //默认渲染列表数据
+      getTaskInfo(){
+        let url = "http://www.phptrain.cn/api/unauth/task/getTaskPage"
+        var param = new FormData()
+        this.pageIndex=1
+        param.append("pageIndex",this.pageIndex)
+        param.append("pageSize",20)
+        param.append("taskName",this.keyword)
+        this.$http.post(url,param).then((res)=>{
+          if(res.data.code&&res.data){
+            if(res.data.code){
+              this.hasCode=false
+            }
+            const data=res.data.result
+            this.tempTaskList=data.content
+            this.totalPages=data.totalPages
+            this.last=data.last
+            if(data.last){
+              this.pullup=false
+            }
+          }
+        })
+      },
+      //上拉加载更多
+      loadMore(){
+        let url = "http://www.phptrain.cn/api/unauth/task/getTaskPage"
+        this.pageIndex++
+        var param = new FormData()
+        param.append("pageIndex",this.pageIndex)
+        param.append("pageSize",this.pageSize)
+        param.append("taskName",this.keyword)
+        console.log(this.pullup)
+        if(this.pullup){
+             this.$http.post(url,param,{
+          headers: {
+            'Content-Type': 'application/json'
+          }
+        }).then((res)=>{
+            const data=res.data.result
+            var result=data.content
+            this.tempTaskList=this.tempTaskList.concat(result)
+             if(this.pageIndex==this.totalPages){
+               this.pullup=false
+               this.$nextTick(() => {
+                  this.hasCode = false;
+                })
+            }
+        })
+        }
+     
+      },
+      //点击放大镜图片显示搜索框
       searchItem() {
         this.show = !this.show;
         this.isShow = false;
         this.showMask =false
         this.$emit('fetch')
       },
+      //点击取消，隐藏搜索框
       cancelSearch(e) {
         this.show = !this.show;
         this.isShow = false;
         this.keyword = ''
       },
+      //点击下拉选项发送所点击的文字到父级
       handleClick(index, name) {
         this.active = index
         this.isShow = false;
@@ -115,6 +179,7 @@
         this.lastItemIndex = 4;
         this.$emit("change", name);
       },
+      //根据类别，等级，奖励显示相应下拉列表
       selectItem(res) {
         if(
           this.lastItemIndex == -1 ||
@@ -147,34 +212,34 @@
         }
         if(res == 1) {
           this.itemList = [{
-              id: "01",
+              id: "001",
               name: "不限"
             },
             {
-              id: "02",
+              id: "002",
               name: "A级"
             },
             {
-              id: "03",
+              id: "003",
               name: "B级"
             },
             {
-              id: "04",
+              id: "004",
               name: "C级"
             }
           ];
         }
         if(res == 2) {
           this.itemList = [{
-              id: "01",
+              id: "1",
               name: "不限"
             },
             {
-              id: "02",
+              id: "2",
               name: "奖励升序"
             },
             {
-              id: "03",
+              id: "3",
               name: "奖励降序"
             }
           ];
@@ -274,7 +339,7 @@
     left: 0;
     right: 0;
     bottom: 60px;
-    top: 50px;
+    top: 60px;
     z-index: 1;
     overflow: hidden;
     .space {
@@ -298,6 +363,7 @@
           .name {
             font-size: 17px;
             color: #2E353B;
+                margin-top: 6px;
           }
           .rank {
             font-size: 13px;

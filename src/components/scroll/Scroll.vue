@@ -159,7 +159,7 @@ export default {
                 click: this.click,
                 scrollX: this.scrollX
             });
-
+          console.log(this.pulldown,'30303030')
             // 是否派发滚动事件
             if (this.listenScroll || this.pulldown || this.pullup) {
                 let me = this;
@@ -205,6 +205,7 @@ export default {
             }
 
             // 是否派发滚动到底部事件，用于上拉加载
+            console.log(this.pullup,'909090')
             if (this.pullup) {
                 this.scroll.on('scrollEnd', () => {
                     // 滚动到底部
@@ -216,11 +217,13 @@ export default {
                                 rotate: ''    // icon-rotate
                             }
                             this.$emit('scrollToEnd');
+                            console.log(this.pageIndex==this.totalSize&& this.last)
                             if(this.pageIndex==this.totalSize&& this.last){
                                  this.pullupTip = {
                                   text: '没有更多',     // 松开立即刷新
                                   rotate: ''    // icon-rotate
-                              }
+                              },
+                              this.pullup=false
                             }
                         },2500);
                         

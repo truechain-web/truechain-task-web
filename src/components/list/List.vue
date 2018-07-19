@@ -7,7 +7,7 @@
       </div>
       <div class="space"></div>
     </div> -->
-    <list-header @change="hanleSelectTack" :taskList="taskList" @fetch="handleFetch"></list-header>
+    <list-header @change="hanleSelectTack"  @fetch="handleFetch"></list-header>
       <scroll class="wrapper" ref="wrapper"
           :data="tempTaskList"  :totalSize="totalPages" :pageIndex="pageIndex"  :last="Islast"
           :pulldown="pulldown" :pullup="pullup" 
@@ -27,7 +27,7 @@
              
           </div>
            <div class="no-data" v-show="hasData">没有找到符合条件的任务</div>
-           <div style="height: 50px;"></div>
+           <div style="height: 50px;" ></div>
           
             
      </scroll>
@@ -81,11 +81,17 @@ import Bscroll from 'better-scroll'
             if(res.data.code){
               this.hasCode=false
             }
-            const data=res.data.result
+             const data=res.data.result
             this.taskList=data.content
             this.tempTaskList=data.content
             this.totalPages=data.totalPages
-            this.last=data.last
+            if(this.pageIndex==this.totalPages&& this.last){
+               this.pullup=false
+               this.$nextTick(() => {
+                  this.hasCode = false;
+                })
+            }
+           
           }
         })
       },
@@ -95,6 +101,7 @@ import Bscroll from 'better-scroll'
         var param = new FormData()
         param.append("pageIndex",this.pageIndex)
         param.append("pageSize",this.pageSize)
+       
         this.$http.post(url,param,{
           headers: {
             'Content-Type': 'application/json'
@@ -102,8 +109,8 @@ import Bscroll from 'better-scroll'
         }).then((res)=>{
             const data=res.data.result
             var result=data.content
-            this.tempTaskList=this.taskList.concat(result)
-             if(this.pageIndex==this.totalPages){
+            this.tempTaskList=this.tempTaskList.concat(result)
+             if(this.pageIndex==this.totalPages&& this.last){
                this.pullup=false
                this.$nextTick(() => {
                   this.hasCode = false;
@@ -120,6 +127,7 @@ import Bscroll from 'better-scroll'
         this.$router.push({name:"TaskDetail",params:{id:id,type:'robTask'}})
       },
       hanleSelectTack(type) {
+        console.log(type)
         let grade = '';
         var category=2; //默认不限
         var reward=2 //奖励默认不限
@@ -150,9 +158,11 @@ import Bscroll from 'better-scroll'
         // 发送请求
         let url =  "http://www.phptrain.cn/api/unauth/task/getTaskPage"
         var param = new FormData()
+        this.pageIndex=1
         param.append("pageIndex",this.pageIndex)
         param.append("pageSize",this.pageSize)
         if(category!==2){
+          console.log(1234567)
           param.append("category",category)
         }
         if(grade!==""){
@@ -167,10 +177,19 @@ import Bscroll from 'better-scroll'
           }
         }).then((res)=>{
           const data=res.data.result
+           if(data.last){
+               this.pullup=false
+               console.log(this.pullup)
+               this.$nextTick(() => {
+                  this.hasCode = false;
+                })
+            }
           if(res.data.code&&res.data){
             this.hasData=false
+            
             this.taskList=data.content
             this.tempTaskList=data.content
+         
           }
           if(data.content==''){
              this.hasData=true
