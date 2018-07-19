@@ -3,6 +3,8 @@ import Router from 'vue-router'
 import Login from '@/components/Login'
 import Regist from "@/components/Regist"
 import OptionDetail from "@/components/OptionDetail"
+import PersonInformation from "@/components/PersonInformation"
+
 import List from '@/components/list/List'
 import Task from '@/components/task/Task'
 import Mine from '@/components/mine/Mine'
@@ -40,6 +42,14 @@ export default new Router({
 			component: OptionDetail,
 			meta:{
 				title:"使用说明"
+		  }
+		},
+		{
+			path: '/personinformation',
+			name: 'PersonInformation',
+			component: PersonInformation,
+			meta:{
+				title:"完善个人信息"
 		  }
 		},
 		{

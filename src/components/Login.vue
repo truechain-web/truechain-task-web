@@ -49,6 +49,11 @@ export default {
 					 this.showTips()
 					 return
 			 }
+			if(!(/^1[3|4|5|8][0-9]\d{4,8}$/.test(this.phone))){ 
+				this.tips ="手机号格式错误"
+				this.showTips()
+				return false; 
+			} 
 			 let url = "http://www.phptrain.cn/api/unauth/account/login"
 				var param = new FormData()
 				param.append("mobile",this.phone)

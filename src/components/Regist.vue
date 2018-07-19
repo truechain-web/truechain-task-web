@@ -1,85 +1,91 @@
 <template>
-	<div class="regist">
-			<!-- <div class="top">
-				 <span class="return" @click="goback"> &lt; </span>
-				 <span class="zhuce">注册</span>
+  <div class="login">
+		  <!-- <div class="top">
+				 <span class="denglu">登录</span>
 			</div> -->
-			<div class="form-part">
-					<form class="form">
-						  <input class="inp" type="text" placeholder="姓名" v-model="uname">
-						  <input class="inp" type="text" placeholder="微信昵称" v-model="wechatName">
-						
-								<input class="inp" type="text" placeholder="微信号" v-model="wechatId">
-								<!-- <input class="inpx-r" type="button" value="获取" @click="getWeChatId"> -->
-						
-							<input class="inp" type="text" placeholder="钱包地址" v-model="address">
-							<input class="inp" type="number" placeholder="联系电话" v-model="phone">
-						  <div class="inpx">
-								<input class="inpx-l" type="text" placeholder="验证码" v-model="code">
-								<input class="inpx-r" type="button" value="获取验证码" @click="clock" ref="clock" :style="clockStyle">
-							</div>
-							<div class="inp-file">
-								 <div class="file-uplaod" v-if="!file">
-									   <div class="add">
-											  <img src="../assets/img/upload_file.png" alt="">
-										 </div>
-										 <span>上传个人简历(需小于500M)</span>
-								 </div>
-								 <div class="file-uplaod" v-else>
-									   <div class="add">
-											  <img src="../assets/img/file.png" alt="">
-										 </div>
-										 <span>{{fileName}}---{{fileSize}}</span>
-								 </div>
-								<input type="file" class="file" @change="fileSelected" id="fileToUpload"/>
-							</div>
-							<div class="tip">
-								 	 <input type="checkbox"  class="checkbox" checked/>
-									 <span>我已阅读</span><span style="color:#00AAEE" @click="optiondetail">《使用说明》</span>
-							</div>
-							<input type="button" value="提交" class="submit" @click="regist">
-					</form>
-
+		  <div class="login-inp">
+				<div ><input type="text" class="inp" v-model="phone" placeholder="注册电话号码"/></div>
+				<div class="inpx">
+						<input class="inpx-l" type="text" placeholder="验证码" v-model="code">
+						<input class="inpx-r" type="button" value="获取验证码" @click="clock" ref="clock" :style="clockStyle">
+				</div>
+				<div class="tip">
+						<input type="checkbox"  class="checkbox" checked/>
+						<span>我已阅读</span><span style="color:#00AAEE" @click="optiondetail">《使用说明》</span>
+				</div>
+			</div>
+			<div class="login-submit">
+				 <input type="button" value="注册" class="submit" style="background-color:#FFAE0F;border:1px solid #FFAE0F" @click="regist">
 			</div>
 			<div class="tips" v-show="showss">{{tips}}</div>
-	</div>
+  </div>
 </template>
 
 <script>
-	export default{
-		name: 'Regist',
-		data () {
-			return {
-				 clockStyle:{
-						backgroundColor:"#FFAE0F",
-						border:"1px solid #FFAE0F",
-						color:"white",	
-				 },
-				 showss:false,
-				 clocks:60,
-				 uname:"",
-				 wechatName:"",
-				 wechatId:"",
-				 address:"",
-				 phone:"",
-				 code:"",
-				 fileName:"",
-				 fileSize:"",
-				 fileType:"",
-				 file:"",
-				 tips:"审核成功进行...",
-				 callbackcode:"7"
-			}
+export default {
+  name: 'Login',
+  data () {
+    return {
+			 phone:"",
+			 code:"",
+			 clocks:60,
+			 clockStyle:{
+					backgroundColor:"#FFAE0F",
+					border:"1px solid #FFAE0F",
+					color:"white",	
+				},
+				 tips:"",
+				 showss:false
+    }
+	},
+  methods:{
+		regist(){
+			  if(!this.phone || !this.code){
+					this.tips ="请填写完整"
+					this.showTips()
+					return 
+				}
+				if(!(/^1[3|4|5|8][0-9]\d{4,8}$/.test(this.phone))){ 
+					this.tips ="手机号格式错误"
+					this.showTips()
+					return false; 
+				} 
+				if(this.code!==this.callbackcode){
+						// 验证码错误
+						this.tips = "验证码错误"
+						this.showTips()
+						return
+				}
+				// 开始注册
+				  var that = this
+					var param = new FormData()
+					param.append("mobile",that.phone)
+					param.append("verifyCode",that.code)
+					// 将内容发送到接口
+					let urls = "http://www.phptrain.cn/api/unauth/account/register"
+						
+					this.$http.post(urls,param,{
+								headers: {
+									'Content-Type': 'multipart/form-data'
+								}
+					}).then((res)=>{
+						console.log(res)
+						if(res.data.message ==="成功"){
+								// 最后提示成功注册
+								that.tips = "注册成功,请前去登录"
+								that.showTips(()=>{
+										that.$router.push({path:"/login"})
+								})
+						}else{
+								that.tips = "注册失败，请重新注册"
+								that.showTips()
+						}
+					}).catch((err)=>{
+						console.log("err",err)
+					})
 		},
-		methods:{
-			optiondetail(){
-				this.$router.push({path:"optiondetail"})
-			},
-			goback(){
-				this.$router.go(-1)
-			},
-			clock(){
-				if(!this.phone){
+		clock(){
+			  if(!this.phone){
 					this.tips ="请填写手机号"
 					this.showTips()
 					return 
@@ -87,19 +93,18 @@
 				this.clockStyle.backgroundColor="gray";
 				this.clockStyle.border="1px solid gray";
 				var sum=this.clocks;
-				var _this = this
-				var dom =  _this.$refs.clock
+				var _this = this;
+				var dom =  _this.$refs.clock;
+				// 开始发送验证码：
 				let url = 'http://www.phptrain.cn/api/unauth/account/verifyCode/'+this.phone
 				this.$http.get(url).then((res)=>{
 						console.log(res)
-						this.callbackcode = res.data.result
 				}).catch((err)=>{
 					console.log(err)
 				})
 				// 禁用按钮
 				var  dom = this.$refs.clock
 				dom.setAttribute("disabled","true")
-
 				var times = setInterval(function(){
 					 dom.value=sum +"s"
 					 if (sum === 0){
@@ -111,83 +116,11 @@
 					 }
 					 sum--;
 				},1000)
-			},
-			regist(){
-				 // 检测是否都填写完成
-				 var that = this
-				 if(this.uname && this.wechatName && this.wechatId && this.address && this.phone && this.code && this.file){
-					    if(this.code!==this.callbackcode){
-								 // 验证码错误
-								 	that.tips = "验证码错误"
-									that.showTips()
-								 return
-							}
-								var param = new FormData()
-								param.append("file",that.file)
-								param.append("name",that.wechatName)
-								param.append("wxNickName",that.wechatId)
-								param.append("wxNum",that.uname)
-								param.append("trueChainAddress",that.address)
-								param.append("mobile",that.phone)
-								param.append("verifyCode",that.code)
-								// 将内容发送到接口
-								let urls = "http://www.phptrain.cn/api/unauth/account/register"
-							//  let params = {
-							// 		name: that.uname,
-							// 		wxNickName: that.wechatName,
-							// 		wxNum: that.wechatId,
-							// 		trueChainAddress:that.address,
-							// 		mobile: that.phone,
-							// 		verifyCode: that.code,
-							//  }
-								that.$http.post(urls,param,{
-										headers: {
-											'Content-Type': 'multipart/form-data'
-										}
-								}).then((res)=>{
-									console.log(res)
-									if(res.data.message ==="成功"){
-											// 最后提示成功注册
-											that.tips = "注册成功,请前去登录"
-											that.showTips(()=>{
-												 that.$router.push({path:"/login"})
-											})
-
-									}else{
-											that.tips = "注册失败，请重新注册"
-											that.showTips()
-									}
-								}).catch((err)=>{
-									console.log("err",err)
-								})
-				 }else{
-						this.tips = "请将内容填写完整"
-						this.showTips()
-				 }
-			},
-			fileSelected(){
-				
-				this.file = document.getElementById('fileToUpload').files[0];
-				console.log(this.file)
-				if(this.file === undefined){
-						this.fileName = '';
-						this.fileSize = '';
-						this.fileType = '';
-				}else{
-						this.fileName = this.file.name;
-						//kb
-						if(this.file.size/1024<1000){
-								this.fileSize = (this.file.size/1024).toFixed(2) +"kb";
-								console.log(this.fileSize)
-						}
-						else if(this.file.size/1024>1000){
-								this.fileSize = ((this.file.size/1024)/1024).toFixed(2) +"MB";
-						}
-						this.fileType = this.file.type;
-						
-				}
-			},
-			showTips(callback){
+		},
+		optiondetail(){
+			this.$router.push({path:"optiondetail"})
+		},
+		showTips(callback){
 				this.showss= true;
 				 var _this = this;
 				 console.log(111)
@@ -197,42 +130,33 @@
 						 callback()
 					 }
 				 },1000)
-			},
-			getWeChatId(){
-				 // 获取微信ID
-			}
 		}
 	}
+}
 </script>
+
+<!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped lang="less">
-.regist{
+.login{
+	display: flex;
+	text-align: center;
+	align-items: center;
+	justify-content: center;
+	flex-direction: column;
 	.top{
-			text-align: center;
 			position: relative;
 			height: 45px;
-			display: flex;
-			align-items: center;
-			justify-content: center;
-			border-bottom: 1px solid #E0E4E5;
-		 .return{
-				font-family:'Courier New', Courier, monospace;
-				font-size:20px;
-				color:#00AAEE;
-				position:absolute;
-				left:20px;
-				top:10px;
-		 }
-		 .zhuce{
+			text-align: center;
+			line-height: 45px;
+		 .denglu{
 			 font-size: 20px;
 		 }
 	}
-	.form-part{
-		.form{
-			display: flex;
-			flex-direction: column;
-			align-items: center;
-			.inp{
-				width:90%;
+	.login-inp{
+		 width:80%;
+		 margin-top: 50px;
+		 .inp{
+				width: 100%;
 				height: 40px;
 				font-size:15px;
 				background-color: #FAFAFA;
@@ -242,12 +166,12 @@
 				padding-left: 10px;
 				box-sizing: border-box;
 			}
-			.inpx{
-				margin-top:20px;
-				width:90%;
+		  .inpx{
+				margin-top:20px;	
 				height: 40px;
 				font-size:15px;
-				display: flex;
+				box-sizing: border-box;
+				display:flex;
 				.inpx-l{
 						width:70%;
 						background-color: #FAFAFA;
@@ -257,7 +181,8 @@
 						height: 100%;
 						box-sizing: border-box;
 						padding-left: 10px;
-							font-size:15px;
+						font-size:15px;
+						
 				}
 				.inpx-r{
 					 	width:30%;
@@ -268,58 +193,28 @@
 						border-top-right-radius: 5px;
 						border-bottom-right-radius: 5px;
 						color:white;
+						box-sizing: border-box;
 				}
-			}
-			.inp-file{
-				height: 100px;
-				width: 90%;
-				background-color: #FAFAFA;
-				margin-top:20px;
-				border-radius: 5px;
-				position: relative;
-				border:1px solid #E7E7E7;
-				 .file{
-					 position: absolute;
-					 width:100%;
-					 height: 100%;
-					 opacity: 0;
-					 top:0;
-					 left:0;
-				 }
-				 .file-uplaod{
-					 width:100%;
-					 height: 100%;
-					 display: flex;
-					 color:#A1ACB4;
-					 font-size: 13px;
-					 align-items: center;
-					 justify-content: center;
-					 flex-direction: column;
-					 .add{
-							width:20px;
-							height: 20px;
-							margin-bottom: 10px;
-							img{
-								 width:100%;
-								 height: 100%;
-							}
-					 }
-				 }
-			}
+			}	 
 			.tip{
-					width:90%;
-					text-align: left;
-					font-size:15px;
-					margin-top:20px;
-					color:#A1ACB4;
-					.checkbox{
-						width: 15px;
-						height: 15px;
-						-webkit-appearance:checkbox;
-					}
-			}
-			.submit{
-				 width:90%;
+				width:90%;
+				text-align: left;
+				font-size:15px;
+				margin-top:20px;
+				color:#A1ACB4;
+				.checkbox{
+					width: 15px;
+					height: 15px;
+					-webkit-appearance:checkbox;
+				}
+		  }
+	}
+	.login-submit{
+		
+		width:80%;
+		margin-top:20px;
+	  .submit{
+				 width:100%;
 				 background-color: #00AAEE;
 				 font-size: 15px;
 				 color:white;
@@ -328,7 +223,6 @@
 				 margin-top:20px;
 				 border:1px solid #00AAEE;
 			}
-		}
 	}
 	.tips{
 		 position: absolute;
@@ -341,7 +235,7 @@
 		 left:50%;
 		 top:50%;
 		 margin-left: -100px;
-		 margin-top: -60px;
+		 margin-top: -120px;
 		 border-radius: 5px;
 	}
 }
