@@ -101,8 +101,9 @@ import Bscroll from 'better-scroll'
         var param = new FormData()
         param.append("pageIndex",this.pageIndex)
         param.append("pageSize",this.pageSize)
-       
-        this.$http.post(url,param,{
+       if(this.pullup){
+       	console.log('还有数据要  ')
+       	  this.$http.post(url,param,{
           headers: {
             'Content-Type': 'application/json'
           }
@@ -117,6 +118,8 @@ import Bscroll from 'better-scroll'
                 })
             }
         })
+       }
+      
       },
       
       handleFetch(){
@@ -177,19 +180,18 @@ import Bscroll from 'better-scroll'
           }
         }).then((res)=>{
           const data=res.data.result
-           if(data.last){
+          if(res.data.code&&res.data){
+            this.hasData=false
+            this.taskList=data.content
+            this.tempTaskList=data.content
+         		 if(data.last&&this.tempTaskList.length){
+         		 	console.log(this.tempTaskList)
                this.pullup=false
                console.log(this.pullup)
                this.$nextTick(() => {
                   this.hasCode = false;
                 })
             }
-          if(res.data.code&&res.data){
-            this.hasData=false
-            
-            this.taskList=data.content
-            this.tempTaskList=data.content
-         
           }
           if(data.content==''){
              this.hasData=true
