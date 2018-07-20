@@ -32,14 +32,8 @@
       <div class="no-data" v-show="hasnoData">没有找到符合条件的任务</div>
       <div style="height: 50px;"></div>
     </scroll>
-    <ul class="select-wrapper" v-show="showList[0]">
-      <li class="border-bottom select-item"  v-for="(item,index) of itemList1" :key="item.id" @click="handleClick(index,item.name,1)" :class="{ active1: active1==index }">{{item.name}}</li>
-    </ul>
-     <ul class="select-wrapper" v-show="showList[1]">
-      <li class="border-bottom select-item"  v-for="(item,index) of itemList2" :key="item.id" @click="handleClick(index,item.name,2)" :class="{ active2: active2==index }">{{item.name}}</li>
-    </ul>
-     <ul class="select-wrapper" v-show="showList[2]">
-      <li class="border-bottom select-item"  v-for="(item,index) of itemList3" :key="item.id" @click="handleClick(index,item.name,3,0)" :class="{ active3: active3==index }">{{item.name}}</li>
+    <ul class="select-wrapper" v-show="isShow">
+      <li class="border-bottom select-item" :class="{ active: active==index }" v-for="(item,index) of itemList" :key="item.id" @click="handleClick(index,item.name)">{{item.name}}</li>
     </ul>
     <div class="mask" v-show="showMask">
     </div>
@@ -58,17 +52,13 @@
     },
     data() {
       return {
+        isShow: true, //下拉是否显示
         show: true, //搜索框是否显示
-        itemList1: [], //下拉列表选项集合
-        itemList2: [], //下拉列表选项集合
-        itemList3: [], //下拉列表选项集合
-        showList:[false,false,false],
+        itemList: [], //下拉列表选项集合
         lastItemIndex: -1, //是否第一次点击下拉
         keyword: "", //搜索框关键字
         timer: null,
-        active1: 0,
-        active2: 0,
-        active3: 0,
+        active: 0,
         showMask: false,
         pageIndex: 1,
         pageSize: 20,
@@ -173,35 +163,22 @@
       //点击放大镜图片显示搜索框
       searchItem() {
         this.show = !this.show;
-        this.showList=[false,false,false]
+        this.isShow = false;
         this.showMask = false
         this.$emit('fetch')
       },
       //点击取消，隐藏搜索框
       cancelSearch(e) {
         this.show = !this.show;
-        this.showList=[false,false,false]
-        
+        this.isShow = false;
         this.keyword = ''
       },
       //点击下拉选项发送所点击的文字到父级
-      handleClick(index,name,type,sort) {
-        
-        if(type==1){
-          this.active1 = index
-        
-        }
-        else if(type==2){
-          this.active2 = index
-        }
-        else{
-          this.active3 = index
-          console.log(sort)
-          this.$emit("change", name,sort)
-        }
+      handleClick(index, name) {
+        this.active = index
+        this.isShow = false;
         this.showMask = false;
         this.isActive = true
-        this.showList=[false,false,false]
         this.lastItemIndex = 4;
         this.$emit("change", name);
       },
@@ -213,17 +190,15 @@
           this.lastItemIndex == 4
         ) {
           this.lastItemIndex = res;
-          this.showMask = true;
+          this.isShow = true;
+          this.showMask = true
         } else if(this.lastItemIndex == res) {
-          this.showMask = false;
+          this.isShow = false;
+          this.showMask = false
           this.lastItemIndex = -1;
-          
         }
         if(res == 0) {
-          this.showList[0]=!this.showList[0]
-           this.showList[1]=false
-           this.showList[2]=false
-          this.itemList1 = [{
+          this.itemList = [{
               id: "01",
               name: "不限",
             },
@@ -238,10 +213,7 @@
           ];
         }
         if(res == 1) {
-          this.showList[1]=!this.showList[1]
-           this.showList[0]=false
-           this.showList[2]=false
-          this.itemList2 = [{
+          this.itemList = [{
               id: "001",
               name: "不限"
             },
@@ -260,10 +232,7 @@
           ];
         }
         if(res == 2) {
-          this.showList[2]=!this.showList[2]
-           this.showList[1]=false
-           this.showList[0]=false
-          this.itemList3 = [{
+          this.itemList = [{
               id: "1",
               name: "不限"
             },
@@ -351,7 +320,7 @@
       line-height: 43px;
       padding: 0 0 0 22px;
       font-size: 15px;
-      &.active1:after,&.active2:after,&.active3:after {
+      &.active:after {
         content: '';
         display: inline-block;
         border: 2px solid #00AAEE;

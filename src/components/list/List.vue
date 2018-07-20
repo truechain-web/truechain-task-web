@@ -65,7 +65,11 @@ import Bscroll from 'better-scroll'
         Islast:''
       }
     },
-
+    computed:{
+        arr1:function(){
+            return this.arr.sort(sortNum)//调用排序方法
+        }
+    },
     methods: {
       goback(){
          this.$router.go(-1)
@@ -75,7 +79,7 @@ import Bscroll from 'better-scroll'
 				var param = new FormData()
 				this.pageIndex=1
 				param.append("pageIndex",this.pageIndex)
-				param.append("pageSize",this.pageSize)
+				param.append("pageSize",50)
         this.$http.post(url,param).then((res)=>{
           if(res.data.code&&res.data){
             if(res.data.code){
@@ -85,7 +89,7 @@ import Bscroll from 'better-scroll'
             this.taskList=data.content
             this.tempTaskList=data.content
             this.totalPages=data.totalPages
-            if(this.pageIndex==this.totalPages&& this.last){
+            if(this.pageIndex==this.totalPages&& data.last){
                this.pullup=false
                this.$nextTick(() => {
                   this.hasCode = false;
@@ -97,12 +101,20 @@ import Bscroll from 'better-scroll'
       },
       loadMore(){
         let url = "http://www.phptrain.cn/api/unauth/task/getTaskPage"
-        this.pageIndex++
+        if(this.pageIndex<this.totalPages){
+          this.pageIndex++
+        }
+        else{
+          this.pageIndex=this.totalPages
+        }
+        
+//this.pageIndex++
+
         var param = new FormData()
         param.append("pageIndex",this.pageIndex)
         param.append("pageSize",this.pageSize)
        if(this.pullup){
-       	console.log('还有数据要  ')
+//     	console.log('还有数据要加载')
        	  this.$http.post(url,param,{
           headers: {
             'Content-Type': 'application/json'
@@ -111,7 +123,8 @@ import Bscroll from 'better-scroll'
             const data=res.data.result
             var result=data.content
             this.tempTaskList=this.tempTaskList.concat(result)
-             if(this.pageIndex==this.totalPages&& this.last){
+//          console.log( this.pageIndex,this.totalPages,data.last)
+             if(this.pageIndex==this.totalPages&& data.last){
                this.pullup=false
                this.$nextTick(() => {
                   this.hasCode = false;
@@ -129,8 +142,7 @@ import Bscroll from 'better-scroll'
       buttonClick (id){
         this.$router.push({name:"TaskDetail",params:{id:id,type:'robTask'}})
       },
-      hanleSelectTack(type) {
-        console.log(type)
+      hanleSelectTack(type,sort) {
         let grade = '';
         var category=2; //默认不限
         var reward=2 //奖励默认不限
@@ -148,15 +160,47 @@ import Bscroll from 'better-scroll'
           category =1
         }
         else if (type === "奖励升序"){
-          reward	 =0
+//        reward	 =0
+       
         }
         else if (type === "奖励降序"){
-          reward	 =1
+//        reward	 =1
+           this.tempTaskList = this.taskList.sort(function(a, b) {
+           return a.number - b.number
+          })
         }
         else{
           grade = '';
           category=2;
            reward	 =2
+        }
+        
+        if(sort==0){
+          if(type === "奖励升序"){
+             function compareUp(property){
+              return function(a,b){
+                  var value1 = a[property];
+                  var value2 = b[property];
+                  return value1 - value2;
+              }
+            }
+            this.tempTaskList=this.taskList.sort(compareUp('rewardNum'))
+           console.log(this.tempTaskList,111111)
+          }
+          else if(type === "奖励降序"){
+             function compareDown(property){
+              return function(a,b){
+                  var value1 = a[property];
+                  var value2 = b[property];
+                  return value2 - value1;
+              }
+          }
+            this.tempTaskList=this.taskList.sort(compareDown('rewardNum'))
+           console.log(this.tempTaskList,2222222)
+          }
+          else{
+            this.getTaskInfo()
+          }
         }
         // 发送请求
         let url =  "http://www.phptrain.cn/api/unauth/task/getTaskPage"
@@ -165,7 +209,6 @@ import Bscroll from 'better-scroll'
         param.append("pageIndex",this.pageIndex)
         param.append("pageSize",this.pageSize)
         if(category!==2){
-          console.log(1234567)
           param.append("category",category)
         }
         if(grade!==""){
@@ -185,9 +228,7 @@ import Bscroll from 'better-scroll'
             this.taskList=data.content
             this.tempTaskList=data.content
          		 if(data.last&&this.tempTaskList.length){
-         		 	console.log(this.tempTaskList)
                this.pullup=false
-               console.log(this.pullup)
                this.$nextTick(() => {
                   this.hasCode = false;
                 })
