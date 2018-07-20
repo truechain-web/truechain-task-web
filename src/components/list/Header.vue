@@ -39,7 +39,7 @@
       <li class="border-bottom select-item"  v-for="(item,index) of itemList2" :key="item.id" @click="handleClick(index,item.name,2)" :class="{ active2: active2==index }">{{item.name}}</li>
     </ul>
      <ul class="select-wrapper" v-show="showList[2]">
-      <li class="border-bottom select-item"  v-for="(item,index) of itemList3" :key="item.id" @click="handleClick(index,item.name,3,0)" :class="{ active3: active3==index }">{{item.name}}</li>
+      <li class="border-bottom select-item"  v-for="(item,index) of itemList3" :key="item.id" @click="handleClick(index,item.name,3)" :class="{ active3: active3==index }">{{item.name}}</li>
     </ul>
     <div class="mask" v-show="showMask">
     </div>
@@ -185,7 +185,7 @@
         this.keyword = ''
       },
       //点击下拉选项发送所点击的文字到父级
-      handleClick(index,name,type,sort) {
+      handleClick(index,name,type) {
         
         if(type==1){
           this.active1 = index
@@ -196,8 +196,7 @@
         }
         else{
           this.active3 = index
-          console.log(sort)
-          this.$emit("change", name,sort)
+          this.$emit("change", name)
         }
         this.showMask = false;
         this.isActive = true

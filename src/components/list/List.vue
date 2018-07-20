@@ -62,7 +62,8 @@ import Bscroll from 'better-scroll'
         pulldown: true,
         pullup:true,
         totalPages:1,
-        Islast:''
+        Islast:'',
+        ListSort:''
       }
     },
     computed:{
@@ -79,7 +80,7 @@ import Bscroll from 'better-scroll'
 				var param = new FormData()
 				this.pageIndex=1
 				param.append("pageIndex",this.pageIndex)
-				param.append("pageSize",50)
+				param.append("pageSize",this.pageSize)
         this.$http.post(url,param).then((res)=>{
           if(res.data.code&&res.data){
             if(res.data.code){
@@ -107,12 +108,15 @@ import Bscroll from 'better-scroll'
         else{
           this.pageIndex=this.totalPages
         }
-        
-//this.pageIndex++
-
         var param = new FormData()
         param.append("pageIndex",this.pageIndex)
         param.append("pageSize",this.pageSize)
+        if(this.ListSort==1){
+           param.append("reward",1)
+        }
+         if(this.ListSort==0){
+           param.append("reward",0)
+        }
        if(this.pullup){
 //     	console.log('还有数据要加载')
        	  this.$http.post(url,param,{
@@ -142,7 +146,7 @@ import Bscroll from 'better-scroll'
       buttonClick (id){
         this.$router.push({name:"TaskDetail",params:{id:id,type:'robTask'}})
       },
-      hanleSelectTack(type,sort) {
+      hanleSelectTack(type) {
         let grade = '';
         var category=2; //默认不限
         var reward=2 //奖励默认不限
@@ -160,48 +164,19 @@ import Bscroll from 'better-scroll'
           category =1
         }
         else if (type === "奖励升序"){
-//        reward	 =0
-       
+          reward	 =1
+          this.ListSort=1
         }
         else if (type === "奖励降序"){
-//        reward	 =1
-           this.tempTaskList = this.taskList.sort(function(a, b) {
-           return a.number - b.number
-          })
+          reward	 =0
+       this.ListSort=0
         }
         else{
           grade = '';
           category=2;
            reward	 =2
         }
-        
-        if(sort==0){
-          if(type === "奖励升序"){
-             function compareUp(property){
-              return function(a,b){
-                  var value1 = a[property];
-                  var value2 = b[property];
-                  return value1 - value2;
-              }
-            }
-            this.tempTaskList=this.taskList.sort(compareUp('rewardNum'))
-           console.log(this.tempTaskList,111111)
-          }
-          else if(type === "奖励降序"){
-             function compareDown(property){
-              return function(a,b){
-                  var value1 = a[property];
-                  var value2 = b[property];
-                  return value2 - value1;
-              }
-          }
-            this.tempTaskList=this.taskList.sort(compareDown('rewardNum'))
-           console.log(this.tempTaskList,2222222)
-          }
-          else{
-            this.getTaskInfo()
-          }
-        }
+
         // 发送请求
         let url =  "http://www.phptrain.cn/api/unauth/task/getTaskPage"
         var param = new FormData()
