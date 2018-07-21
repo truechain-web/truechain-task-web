@@ -11,8 +11,8 @@
       <scroll class="wrapper" ref="wrapper"
           :data="tempTaskList"  :totalSize="totalPages" :pageIndex="pageIndex"  :last="Islast"
           :pulldown="pulldown" :pullup="pullup" 
-          @pulldown="getTaskInfo" @scrollToEnd="loadMore"> 
-          <div class="list" >
+          @pulldown="getTaskInfo" @scrollToEnd="loadMore"   > 
+          <div class="list" ref="list">
               <div class="item  border-bottom" v-for="item of tempTaskList">
                 <div class="left">
                   <img :src="item.iconPath" alt="" class="tackImg" />
@@ -31,6 +31,7 @@
           
             
      </scroll>
+  
      <div class="loading-container" v-show="hasCode">
               <loading></loading>
             </div>
@@ -50,6 +51,9 @@ import Bscroll from 'better-scroll'
       Tabs,
       Loading,Scroll
     },
+     created() {
+    	this.listenScroll = true
+  	},
     data() {
       return {
         taskType: '',
@@ -63,15 +67,15 @@ import Bscroll from 'better-scroll'
         pullup:true,
         totalPages:1,
         Islast:'',
-        ListSort:''
+        ListSort:'',
       }
     },
-    computed:{
-        arr1:function(){
-            return this.arr.sort(sortNum)//调用排序方法
-        }
-    },
+ 
     methods: {
+    	//重新筛选完回到顶部
+   		scrollTo() {
+        this.$refs.wrapper.scrollTo(0, 0, 10, 'bounce')
+      },
       goback(){
          this.$router.go(-1)
       },
@@ -79,6 +83,8 @@ import Bscroll from 'better-scroll'
         let url = "http://www.phptrain.cn/api/unauth/task/getTaskPage"
 				var param = new FormData()
 				this.pageIndex=1
+				this.ListSort=2
+				this.pullup=true
 				param.append("pageIndex",this.pageIndex)
 				param.append("pageSize",this.pageSize)
         this.$http.post(url,param).then((res)=>{
@@ -118,7 +124,6 @@ import Bscroll from 'better-scroll'
            param.append("reward",0)
         }
        if(this.pullup){
-//     	console.log('还有数据要加载')
        	  this.$http.post(url,param,{
           headers: {
             'Content-Type': 'application/json'
@@ -127,7 +132,6 @@ import Bscroll from 'better-scroll'
             const data=res.data.result
             var result=data.content
             this.tempTaskList=this.tempTaskList.concat(result)
-//          console.log( this.pageIndex,this.totalPages,data.last)
              if(this.pageIndex==this.totalPages&& data.last){
                this.pullup=false
                this.$nextTick(() => {
@@ -175,12 +179,16 @@ import Bscroll from 'better-scroll'
           grade = '';
           category=2;
            reward	 =2
+            this.ListSort=2
         }
 
         // 发送请求
+				this.scrollTo()
+				 this.pullup=true
         let url =  "http://www.phptrain.cn/api/unauth/task/getTaskPage"
         var param = new FormData()
         this.pageIndex=1
+        this.totalPages=1
         param.append("pageIndex",this.pageIndex)
         param.append("pageSize",this.pageSize)
         if(category!==2){
@@ -201,8 +209,10 @@ import Bscroll from 'better-scroll'
           if(res.data.code&&res.data){
             this.hasData=false
             this.taskList=data.content
+              this.totalPages=data.totalPages
             this.tempTaskList=data.content
-         		 if(data.last&&this.tempTaskList.length){
+         
+         	if(this.tempTaskList.length && data.last){
                this.pullup=false
                this.$nextTick(() => {
                   this.hasCode = false;
@@ -228,6 +238,7 @@ import Bscroll from 'better-scroll'
 </script>
 
 <style lang="less" scoped>
+.list{background: #fff;}
  .header-top{
    height: 50px;
    line-height: 50px;

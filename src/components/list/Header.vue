@@ -99,11 +99,17 @@
           this.tempTaskList = [];
         }
         this.timer = setTimeout(() => {
+        	
           this.getTaskInfo()
+          	this.scrollTo()
         }, 100);
       }
     },
     methods: {
+    		//重新筛选完回到顶部
+   		scrollTo() {
+        this.$refs.wrapper.scrollTo(0, 0, 10, 'bounce')
+      },
       //点击抢任务按钮，跳转
       buttonClick(id) {
         this.$router.push({
@@ -132,6 +138,7 @@
             this.totalPages = data.totalPages
             this.last = data.last
             if(data.last) {
+            	this.pageIndex==this.totalPages&& data.last
               this.pullup = false
               this.pulldown = false
             }
@@ -146,6 +153,7 @@
         } else {
           this.pageIndex = this.totalPages
         }
+//      this.totalPages=1
         var param = new FormData()
         param.append("pageIndex", this.pageIndex)
         param.append("pageSize", this.pageSize)
@@ -158,7 +166,10 @@
           }).then((res) => {
             const data = res.data.result
             var result = data.content
+//          this.totalPages = data.totalPages
             this.tempTaskList = this.tempTaskList.concat(result)
+            
+            
             if(this.pageIndex == this.totalPages && data.last) {
               this.pullup = false
               this.$nextTick(() => {
@@ -285,7 +296,11 @@
     background: #eee;
     height: 10px;
   }
-  
+  .no-data{
+    text-align: center;
+    margin: 10px 0;
+    font-size: 14px;
+  }
   .header {
     position: fixed;
     // top: 60px;

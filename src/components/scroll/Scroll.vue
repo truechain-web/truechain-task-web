@@ -1,12 +1,22 @@
 <template>
   <div ref="wrapper" class="better-scroll-root">  <!--该节点需要定位，内容以此节点的盒模型为基础滚动。另外，该节点的背景色配合上拉加载、下拉刷新的UI，正常情况下不可作它用。-->
     <div class="content-bg better-scroll-container">  <!--如果需要调滚动内容的背景色，则改该节点的背景色-->
-        <div> <!--不太需要，待优化-->
-            <div v-if="data.length>11" class="pulldown-tip">
+       <!--<div> 
+            <div v-if="data.length>19" class="pulldown-tip">
                 <i class="pull-icon indexicon icon-pull-down" :class="[pulldownTip.rotate]"></i>
                 <span class="tip-content">{{pulldownTip.text}}</span>
             </div>
-            <div v-if="data.length>11" class="pullup-tip">
+            <div v-if="data.length>19" class="pullup-tip">
+                <i class="pull-icon indexicon icon-pull-up" :class="[pullupTip.rotate]"></i>
+                <span class="tip-content">{{pullupTip.text}}</span>
+            </div>
+        </div>-->
+        <div> 
+            <div v-if="data.length>10"  class="pulldown-tip" >
+                <i class="pull-icon indexicon icon-pull-down" :class="[pulldownTip.rotate]"></i>
+                <span class="tip-content">{{pulldownTip.text}}</span>
+            </div>
+            <div  class="pullup-tip" v-if="data.length>10">
                 <i class="pull-icon indexicon icon-pull-up" :class="[pullupTip.rotate]"></i>
                 <span class="tip-content">{{pullupTip.text}}</span>
             </div>
@@ -126,7 +136,7 @@ export default {
             type: Boolean,
             default: false
         }
-         
+        
     },
     data() {
         return {
@@ -159,7 +169,6 @@ export default {
                 click: this.click,
                 scrollX: this.scrollX
             });
-          console.log(this.pulldown,'30303030我是下拉')
             // 是否派发滚动事件
             if (this.listenScroll || this.pulldown || this.pullup) {
                 let me = this;
@@ -205,28 +214,36 @@ export default {
             }
 
             // 是否派发滚动到底部事件，用于上拉加载
-            console.log(this.pullup,'909090我是上拉')
+           
             if (this.pullup) {
                 this.scroll.on('scrollEnd', () => {
                     // 滚动到底部
-                    console.log(this.scroll.y <= (this.scroll.maxScrollY + 50) , this.pageIndex,this.totalSize)
-                    if (this.scroll.y <= (this.scroll.maxScrollY + 50)  &&  this.pageIndex<this.totalSize) {
+                    this.pullupTip = {
+                                text: '',     // 松开立即刷新
+                                rotate: 'icon-rotate'    // icon-rotate
+                            }
+                    if (this.scroll.y <= (this.scroll.maxScrollY + 50)  &&  this.pageIndex<=this.totalSize) {
                         setTimeout(() => {
                             // 重置提示信息
-                            this.pullupTip = {
-                                text: '上拉加载',     // 松开立即刷新
-                                rotate: ''    // icon-rotate
+//                          this.pullupTip = {
+//                              text: '上拉加载',     // 松开立即刷新
+//                              rotate: ''    // icon-rotate
+//                          }
+         
+                            if(this.pageIndex,this.totalSize){
+                            		this.pullupTip = {
+                                text: '',
+                                rotate: 'icon-rotate'
                             }
-                            this.$emit('scrollToEnd');
-                            console.log(this.pageIndex==this.totalSize&& this.last)
+                            }
                             if(this.pageIndex==this.totalSize&& this.last){
-                              console.log('没有更多')
                                  this.pullupTip = {
                                   text: '没有更多',     // 松开立即刷新
                                   rotate: ''    // icon-rotate
                               }
                             }
-                        },2500);
+                          	this.$emit('scrollToEnd');
+                        },2000);
                         
                     }
                 });
@@ -257,6 +274,8 @@ export default {
                     this.$emit('beforeScroll')
                 });
             }
+            
+
         },
         disable() {
             // 代理better-scroll的disable方法
@@ -285,39 +304,47 @@ export default {
             setTimeout(() => {
                 this.refresh();
             }, this.refreshDelay);
-        }
+        },
+				pullup(){
+				console.log(this.pullup)	
+				}
     }
 }
 </script>
-<style lang="less" rel="stylesheet/scss">
+<style lang="less" >
 .better-scroll-root {
+	.loading-pos{ top: 0;}
     .loading-pos, .pulldown-tip {
         position: absolute;
         left: 0;
-        top: 0;
+       
         width: 100%;
         height: 35px;
-        color: #000;
+        color: #A3A5A8;
         text-align: center;
         z-index: 2000;
     }
+     .tip-content{
+        	font-size: 14px;
+        }
+
     .pullup-tip{
       position: absolute;
         left: 0;
         bottom: 0;
         width: 100%;
         height: 35px;
-        color: #000;
+        color: #A3A5A8;
         text-align: center;
         z-index: 2000;
-    }
+           }
     .loading-pos {
         background-color: rgba(7, 17, 27, 0.7);
     }
     .pulldown-tip {
-        top: -50px;
-        height: 50px;
-        line-height: 50px;
+        top: -40px;
+        height: 30px;
+        line-height: 30px;
         z-index: 1;
     }
     .pullup-tip{
@@ -335,7 +362,7 @@ export default {
             height: 70px;
             background-size: 24px !important;
             position: absolute;
-            top: -14px;
+            top: -20px;
                left: 50%;
     margin-left: -80px;
         }

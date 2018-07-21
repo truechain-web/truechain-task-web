@@ -8,13 +8,25 @@
 			<div class="space"></div>
 		</div> -->
     <div v-show="this.token">
-      <div class="header">
+      <div class="header" v-if="unComplete">
         <div class="left">
-          <img src="http://static.galileo.xiaojukeji.com/static/tms/seller_avatar_256px.jpg" alt="" class="userImg" />
+          <img src="../../assets/img/user.png" alt="" class="userImg" />
+          <div class="userRank">
+         
+          	 <p class="name"><span  v-text="mobile"></span><span class="identity">（游客）</span></p>
+         
+           <router-link to="/PersonInformation">
+            <p class="addInfo">完善个人信息</p>
+             </router-link> 
+          </div>
+        </div>
+      </div>
+      <div class="header" v-if="!unComplete">
+        <div class="left">
+          <img src="../../assets/img/user.png" alt="" class="userImg" />
           <div class="userRank">
             <p class="name" v-text="wxNickName"></p>
             <p class="rank">等级：<span>{{level}}</span></p>
-            <p class="addInfo" @click="addInfo(this.userId)">完善个人信息</p>
           </div>
         </div>
         <router-link to="recommend">
@@ -25,7 +37,7 @@
         </router-link>
       </div>
       <div class="space"></div>
-      <div>
+      <div v-if="!unComplete">
         <ul class="navBar">
           <li class="item border-right" @click="tabs(index)" v-for="(item,index) of navs" :class="{active:active==index}">
             <span class="num" v-text="item.num"><span class="unit">个</span></span>
@@ -35,7 +47,7 @@
         <div class="space space_"></div>
       </div>
 
-      <div class="tabCon" ref="wrapper">
+      <div class="tabCon" ref="wrapper" v-if="!unComplete">
         <div>
 
           <div class="tabConWrapper border-bottom" v-for='(itemCon,index) in tabContents'>
@@ -51,7 +63,7 @@
     </div>
     <router-link to="Login">
       <div v-show="this.token===null" class="login-text">
-        请先登录
+      	请先登录
       </div>
     </router-link>
     <tabs></tabs>
@@ -81,6 +93,8 @@
         rewardResource: '',
         token: null,
         userId:'',
+        mobile:'',
+        unComplete:'',
         navs: [{
             id: '1',
             num: '',
@@ -151,10 +165,15 @@
         let url = 'http://www.phptrain.cn/api/user/getUserInfo?rewardType=1'
         if(this.token) {
           this.$http.get(url).then((res) => {
+          	console.log(res.data)
             const result = res.data.result
             this.level = result.user.level
+						this.mobile=result.user.mobile            
             this.userId=result.user.id
-            console.log(this.userId)
+            if(result.user.auditStatus==0){
+            	this.unComplete=true
+            }
+            
             this.recommendPeople = result.recommendPeople
             this.wxNickName = result.user.wxNickName
             this.navs[1].num = result.userAccount.ttrReward
@@ -209,7 +228,15 @@
    .login-text{
     text-decoration: underline;
     color: #02ABEE;
-    margin: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 60px;
+    right: 0;
+    font-size: 16px;
   }
   .space_ {
     position: fixed;
@@ -217,7 +244,7 @@
     left: 0;
     right: 0;
   }
-  
+  .identity{font-size: 14px;}
   .header-top {
     height: 50px;
     line-height: 50px;

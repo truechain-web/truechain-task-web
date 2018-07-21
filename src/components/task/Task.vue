@@ -38,7 +38,7 @@
     </div>
     <router-link to="Login">
       <div v-show="this.token===null" class="login-text">
-                  请先登录
+              查看任务，<span>请先登录</span>
       </div>
     </router-link>
     
@@ -195,9 +195,18 @@
     height: 10px;
   }
   .login-text{
-    text-decoration: underline;
+    
     color: #02ABEE;
-    margin: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 60px;
+    right: 0;
+    font-size: 16px;
+    span{text-decoration: underline;}
   }
   .header-top {
     height: 50px;
