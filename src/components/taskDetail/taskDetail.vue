@@ -102,11 +102,22 @@
         showss:false,
         tips:''  ,
         commitAddress:'',
-          remark:'' 
+        remark:'' ,
+        unComplete:''  //true 信息不完整
     
       }
     },
     methods: {
+        getLoginUser(){
+            let url = "http://www.phptrain.cn/api/user/getLoginUser"
+            this.$http.get(url).then((res)=>{
+            if(res.data.code && res.data){
+                if(res.data.result.auditStatus =='0'){
+                    this.unComplete = true
+                }
+            }
+            })
+        },
         goback(){
             this.$router.go(-1)
         },
@@ -133,7 +144,6 @@
         },
         getUserTaskInfo(){
              let id = this.$router.history.current.params.id
-             console.log(id)
              let url = "http://www.phptrain.cn/api/task/getUserTaskInfo?taskId="+id
 				var param = {
                     taskId:id
@@ -163,24 +173,36 @@
                 }},1000)
 		},
         holdTask(item){
+                console.log(item)
+            
             if(!localStorage.token){
                 this.tips ="您尚未登录，请先登录"
 				this.showTips()
-                var _this=this
+                var _this = this
                 setTimeout(function(){
-                    _this.$router.push({path:"Login"})    
+                    _this.$router.push({path:"/login"})    
                 },1500)
 				return 
             } 
+            if(this.unComplete) {
+                this.tips ="请先完善个人信息"
+                this.showTips()
+                var _this = this
+                setTimeout(function(){
+                    _this.$router.push({path:"/personinformation"})                       
+                },2000)
+                return
+            }
+
             if(item && item.isLevelEnough ==='0'){
-                this.tips ="您的开发评级为："+item.userleve+"，请选择符合您开发等级的任务"
+                this.tips ="您的开发评级为："+item.userlevel+"，请选择符合您开发等级的任务"
 				this.showTips()
 				return
             }
+            
             let id = this.$router.history.current.params.id
             if(item.id){
                 id = item.id
-                
             }
             let url = "http://www.phptrain.cn/api/task/holdTask?taskDetailId="+id
             var param = {
@@ -198,7 +220,7 @@
                     this.showTips()
                     var _this=this
                     setTimeout(function(){
-                        _this.$router.push({path:"Task"})    
+                        _this.$router.push({path:"/task"})    
                        },1500)
                     return 
                     
@@ -227,7 +249,7 @@
                         this.showTips() 
                         var _this=this
                         setTimeout(function(){
-                            _this.$router.push({path:"Task"})    
+                            _this.$router.push({path:"/task"})    
                         },1500)
                     				
 					}else{
@@ -240,6 +262,7 @@
         
     },
     mounted() {
+        this.getLoginUser()
         this.type = this.$router.history.current.params.type 
         this.buttonText = this.$router.history.current.params.buttonText
         if(this.type=='robTask') {
@@ -247,6 +270,7 @@
         } else {
             this.getUserTaskInfo()            
         }
+
     }
 
   }
@@ -463,7 +487,7 @@
             height: 30px;
             line-height: 30px;
             background-color: #FFAE0F;
-            color: #E0E4E5;
+            color: #fff;
             border-radius: 5px;
         }
    }
