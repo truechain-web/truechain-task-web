@@ -15,7 +15,7 @@
          
           	 <p class="name"><span  v-text="mobile"></span><span class="identity">（游客）</span></p>
          
-           <router-link to="/PersonInformation">
+           <router-link :to="{path :'/personInformation',query: {userid: userId}}">
             <p class="addInfo">完善个人信息</p>
              </router-link> 
           </div>

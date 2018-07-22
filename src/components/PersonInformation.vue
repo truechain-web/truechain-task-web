@@ -61,14 +61,12 @@
 				 wechatName:"",
 				 wechatId:"",
 				 address:"",
-				 phone:"",
-				 code:"",
 				 fileName:"",
 				 fileSize:"",
 				 fileType:"",
 				 file:"",
 				 tips:"审核成功进行...",
-				 callbackcode:"7"
+				 userId :""
 			}
 		},
 		methods:{
@@ -115,31 +113,22 @@
 			regist(){
 				 // 检测是否都填写完成
 				 var that = this
-				 if(this.uname && this.wechatName && this.wechatId && this.address && this.phone && this.code && this.file){
-					    if(this.code!==this.callbackcode){
-								 // 验证码错误
-								 	that.tips = "验证码错误"
-									that.showTips()
-								 return
-							}
+				 if(this.uname && this.wechatName && this.wechatId && this.address && this.file){
+					    // if(this.code!==this.callbackcode){
+							// 	 // 验证码错误
+							// 	 	that.tips = "验证码错误"
+							// 		that.showTips()
+							// 	 return
+							// }
 								var param = new FormData()
 								param.append("file",that.file)
 								param.append("name",that.wechatName)
 								param.append("wxNickName",that.wechatId)
 								param.append("wxNum",that.uname)
 								param.append("trueChainAddress",that.address)
-								param.append("mobile",that.phone)
-								param.append("verifyCode",that.code)
+								param.append("userId",that.userId)
 								// 将内容发送到接口
-								let urls = "http://www.phptrain.cn/api/unauth/account/register"
-							//  let params = {
-							// 		name: that.uname,
-							// 		wxNickName: that.wechatName,
-							// 		wxNum: that.wechatId,
-							// 		trueChainAddress:that.address,
-							// 		mobile: that.phone,
-							// 		verifyCode: that.code,
-							//  }
+								let urls = "http://www.phptrain.cn/api/user/updateUserInfo"
 								that.$http.post(urls,param,{
 										headers: {
 											'Content-Type': 'multipart/form-data'
@@ -147,14 +136,14 @@
 								}).then((res)=>{
 									console.log(res)
 									if(res.data.message ==="成功"){
-											// 最后提示成功注册
-											that.tips = "注册成功,请前去登录"
+											// 最后提示成功提交	
+											that.tips = "提交成功，审核中..."
 											that.showTips(()=>{
-												 that.$router.push({path:"/login"})
+												 that.$router.push({path:"/mine"})
 											})
 
 									}else{
-											that.tips = "注册失败，请重新注册"
+											that.tips = "提交失败，请重新提交"
 											that.showTips()
 									}
 								}).catch((err)=>{
@@ -201,6 +190,9 @@
 			getWeChatId(){
 				 // 获取微信ID
 			}
+		},
+		mounted(){
+			 this.userId = this.$route.query.userid
 		}
 	}
 </script>

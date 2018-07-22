@@ -35,7 +35,7 @@ axios.interceptors.request.use(
 
 axios.interceptors.response.use(function (response) {
 			// token 已过期，重定向到登录页面
-			if (response.data.code == 4){
+			if (response.data.code == 403){
 				localStorage.clear()
 				router.replace({
 						path: '/login'
