@@ -35,7 +35,8 @@ export default {
 					color:"white",	
 				},
 				 tips:"",
-				 showss:false
+				 showss:false,
+				 callbackcode:""
     }
 	},
   methods:{
@@ -45,7 +46,7 @@ export default {
 					this.showTips()
 					return 
 				}
-				if(!(/^1[3|4|5|8][0-9]\d{4,8}$/.test(this.phone))){ 
+				if(!(/^1[3|4|5|8|2|7|6|9][0-9]\d{4,8}$/.test(this.phone))){ 
 					this.tips ="手机号格式错误"
 					this.showTips()
 					return false; 
@@ -99,6 +100,7 @@ export default {
 				let url = 'http://www.phptrain.cn/api/unauth/account/verifyCode/'+this.phone
 				this.$http.get(url).then((res)=>{
 						console.log(res)
+						this.callbackcode = res.data.result
 				}).catch((err)=>{
 					console.log(err)
 				})
