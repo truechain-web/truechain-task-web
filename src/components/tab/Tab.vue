@@ -1,15 +1,15 @@
 <template>
   <div>
     <footer class="footer border-top">
-      <router-link to="/List" tag="div" class="tab-item">
+      <router-link to="/List" tag="div" class="tab-item" @click.native="flushCom">
           <span class="iconfont ">&#xe76a;</span>
           <p class="name">任务列表</p>
       </router-link>
-      <router-link to="/Task" tag="div" class="tab-item">
+      <router-link to="/Task" tag="div" class="tab-item" @click.native="flushCom">
           <span class="iconfont">&#xe63f;</span>
           <p class="name">我的任务</p>
       </router-link>
-      <router-link to="/Mine" tag="div" class="tab-item">
+      <router-link to="/Mine" tag="div" class="tab-item" @click.native="flushCom">
           <span class="iconfont">&#xe614;</span>
           <p class="name">个人中心</p>
       </router-link>
@@ -20,7 +20,12 @@
 
 <script>
   export default {
-    name: 'Tabs'
+    name: 'Tabs',
+    methods:{
+　　　　flushCom(){
+					this.$emit('clickTab')
+			}
+　　}
   }
 </script>
 

@@ -66,7 +66,7 @@
       	请先登录
       </div>
     </router-link>
-    <tabs></tabs>
+    <tabs @clickTab="clickTab"></tabs>
   </div>
 </template>
 
@@ -77,6 +77,7 @@
 
   export default {
     name: "Mine",
+    inject:['reload'],
     components: {
       Tabs,
     },
@@ -119,6 +120,9 @@
 
     },
     methods: {
+    	clickTab(){
+	      this.reload()
+	    },
       goback() {
         this.$router.go(-1)
       },

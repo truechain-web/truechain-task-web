@@ -12,11 +12,11 @@
             </div>
         </div>-->
         <div> 
-            <div v-if="data.length>10"  class="pulldown-tip" >
+            <div v-if="data.length>7"  class="pulldown-tip" >
                 <i class="pull-icon indexicon icon-pull-down" :class="[pulldownTip.rotate]"></i>
                 <span class="tip-content">{{pulldownTip.text}}</span>
             </div>
-            <div  class="pullup-tip" v-if="data.length>10">
+            <div  class="pullup-tip" v-if="data.length>7">
                 <i class="pull-icon indexicon icon-pull-up" :class="[pullupTip.rotate]"></i>
                 <span class="tip-content">{{pullupTip.text}}</span>
             </div>
@@ -230,7 +230,7 @@ export default {
 //                              rotate: ''    // icon-rotate
 //                          }
          
-                            if(this.pageIndex,this.totalSize){
+                            if(this.pageIndex<this.totalSize){
                             		this.pullupTip = {
                                 text: '',
                                 rotate: 'icon-rotate'
@@ -306,7 +306,7 @@ export default {
             }, this.refreshDelay);
         },
 				pullup(){
-				console.log(this.pullup)	
+//				console.log(this.pullup)	
 				}
     }
 }
