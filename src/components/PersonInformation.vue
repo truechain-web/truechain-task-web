@@ -34,7 +34,7 @@
 								<input type="file" class="file" @change="fileSelected" id="fileToUpload"/>
 							</div>
 							<div class="tip">
-								 	 <input type="checkbox"  class="checkbox" checked/>
+								 	 <input type="checkbox"  class="checkbox" v-model="checked"/>
 									 <span>我已阅读</span><span style="color:#00AAEE" @click="optiondetail">《使用说明》</span>
 							</div>
 							<input type="button" value="提交" class="submit" @click="regist">
@@ -66,7 +66,8 @@
 				 fileType:"",
 				 file:"",
 				 tips:"审核成功进行...",
-				 userId :""
+				 userId :"",
+				 checked:true
 			}
 		},
 		methods:{
@@ -112,6 +113,11 @@
 			},
 			regist(){
 				 // 检测是否都填写完成
+				if (!this.checked){
+						this.tips ="请确定已阅读使用说明"
+						this.showTips()
+						return
+				}
 				 var that = this
 				 if(this.uname && this.wechatName && this.wechatId && this.address && this.file){
 					    // if(this.code!==this.callbackcode){
