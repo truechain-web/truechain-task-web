@@ -85,7 +85,7 @@ export default new Router({
 				title:"推荐记录"
 		  }
     },{
-      path: '/taskDetail:id',
+      path: '/taskDetail/:id',
       name: 'TaskDetail',
 			component: TaskDetail
     },

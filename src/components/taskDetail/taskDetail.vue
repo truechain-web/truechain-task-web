@@ -36,7 +36,7 @@
         <div class='space'></div> 
 
     <!-- 抢任务-任务列表过来 -->
-        <div class="robTask" v-if=" type ==='robTask' ">
+        <div class="robTask" v-if=" type ==='robTask' || type== undefined ">
             <div class="cont-title">报名情况</div>
             <!-- 任务个人 -->
             <div  v-for='item of data.taskDetailList' v-if="data.task.category=='0'">
@@ -140,6 +140,8 @@ export default {
               this.data = res.data.result;
             }
           } else {
+              this.tips = res.data.message;
+            this.showTips();
           }
         });
     },
@@ -177,8 +179,6 @@ export default {
       }, 1000);
     },
     holdTask(item) {
-      console.log(item);
-
       if (!localStorage.token) {
         this.tips = "您尚未登录，请先登录";
         this.showTips();
@@ -316,12 +316,16 @@ export default {
   },
   mounted() {
     this.getLoginUser();
+
     this.type = this.$router.history.current.params.type;
     this.buttonText = this.$router.history.current.params.buttonText;
     if (this.type == "robTask") {
       this.getDetail();
-    } else {
+    } else if (this.type == "myTask") {
       this.getUserTaskInfo();
+    } else  {
+      console.log(777)
+      this.getDetail();        
     }
   }
 };

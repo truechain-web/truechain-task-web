@@ -49,7 +49,7 @@ export default {
 					 this.showTips()
 					 return
 			 }
-			if(!(/^1[3|4|5|7|8|9][0-9]\d{4,8}$/.test(this.phone))){ 
+			if(!(/^1[3|4|5|6|7|8|9][0-9]\d{4,8}$/.test(this.phone))){ 
 				this.tips ="手机号格式错误"
 				this.showTips()
 				return false; 
