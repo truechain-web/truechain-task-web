@@ -52,7 +52,7 @@
                     <span v-if="data.task.rewardType=='2'">ttr</span>
                     <span v-if="data.task.rewardType=='3'">rmp</span> 
                 </div>
-                <div class="five"  @click="holdTask(item)" >抢任务</div> 
+                <div class="five" v-if="item.isFull!='1'"  @click="holdTask(item)" >抢任务</div> 
                 <div class="four" v-if="item.isFull=='1'"  >已满</div> 
                 <!-- <div class="four" v-if="!localStorage.token" to="/Login">注册</div>  -->
             </div>
@@ -104,7 +104,7 @@ export default {
       tips: "",
       commitAddress: "",
       remark: "",
-      unComplete: "" //true 信息不完整
+      unComplete: "" // 0-未提交，信息不完整，1-审核完成，-1 - 提交了未审核
     };
   },
   methods: {
@@ -112,9 +112,9 @@ export default {
       let url = "http://www.phptrain.cn/api/user/getLoginUser";
       this.$http.get(url).then(res => {
         if (res.data.code && res.data) {
-          if (res.data.result.auditStatus == "0") {
-            this.unComplete = true;
-          }
+          if (res.data.result.auditStatus ) {
+            this.unComplete = res.data.result.auditStatus
+          }  
         }
       });
     },
@@ -188,7 +188,7 @@ export default {
         }, 1500);
         return;
       }
-      if (this.unComplete) {
+      if (this.unComplete =='0') {
         this.tips = "请先完善个人信息";
         this.showTips();
         var _this = this;
@@ -196,6 +196,10 @@ export default {
           _this.$router.push({ path: "/personinformation" });
         }, 2000);
         return;
+      } else if(this.unComplete =='-1'){
+        this.tips = "用户信息审核中暂不可抢任务";
+        this.showTips();
+        return
       }
 
       if (item && item.isLevelEnough === "0") {
@@ -238,6 +242,11 @@ export default {
     },
     commit() {
       let id = this.$router.history.current.params.id;
+      if(!this.commitAddress){
+        this.tips = "请输入提交地址 ";
+        this.showTips();
+        return
+      }
       let url = "http://www.phptrain.cn/api/task/commitUserTask?taskId=" + id;
       var param = {
         taskId: id,
