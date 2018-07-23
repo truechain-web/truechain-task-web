@@ -15,7 +15,7 @@ Vue.use(Router)
 
 export default new Router({
 	linkActiveClass: 'active',
-//	 mode :"history",
+	 mode :"history",
   routes: [
 		{
 			path:"/",
@@ -85,7 +85,7 @@ export default new Router({
 				title:"推荐记录"
 		  }
     },{
-      path: '/taskDetail:id',
+      path: '/taskDetail/:id',
       name: 'TaskDetail',
 			component: TaskDetail
     },

@@ -36,7 +36,7 @@
         <div class='space'></div> 
 
     <!-- 抢任务-任务列表过来 -->
-        <div class="robTask" v-if=" type ==='robTask' ">
+        <div class="robTask" v-if=" type ==='robTask' || type== undefined ">
             <div class="cont-title">报名情况</div>
             <!-- 任务个人 -->
             <div  v-for='item of data.taskDetailList' v-if="data.task.category=='0'">
@@ -52,13 +52,13 @@
                     <span v-if="data.task.rewardType=='2'">ttr</span>
                     <span v-if="data.task.rewardType=='3'">rmp</span> 
                 </div>
-                <div class="five"  @click="holdTask(item)" >抢任务</div> 
+                <div class="five" v-if="item.isFull!='1'"  @click="holdTask(item)" >抢任务</div> 
                 <div class="four" v-if="item.isFull=='1'"  >已满</div> 
                 <!-- <div class="four" v-if="!localStorage.token" to="/Login">注册</div>  -->
             </div>
             <div class="bottom" >
                 <div class='button one' @click="holdTask"  v-if="data.task.category=='0'">抢任务</div>
-                <div class='button two' >推荐转发</div>                
+                <div class='button two' @click="recommend">推荐转发</div>                
             </div>            
         </div>
         <!-- 已经完成 -->
@@ -81,417 +81,481 @@
 </template>
 
 <script>
-  import Bscroll from 'better-scroll'
-  import Tabs from '../tab/Tab'
-  import axios from 'axios'
-  export default {
-    name: "TaskDetail",
-    components: {
-      Tabs,
+import Bscroll from "better-scroll";
+import Tabs from "../tab/Tab";
+import axios from "axios";
+import wx from "weixin-js-sdk";
+export default {
+  name: "TaskDetail",
+  components: {
+    Tabs
+  },
+  data() {
+    return {
+      data: {
+        task: {
+          // iconPath:'http://img1.qunarzz.com/piao/fusion/1710/a6/83f636bd75ae6302.png'
+        }
+      },
+      type: "", // myTask--我的任务页面跳转    robTask-任务列表跳转
+      roleList: [{}],
+      buttonText: "", // 详情  提交
+      showss: false,
+      tips: "",
+      commitAddress: "",
+      remark: "",
+      unComplete: "" // 0-未提交，信息不完整，1-审核完成，-1 - 提交了未审核
+    };
+  },
+  methods: {
+    getLoginUser() {
+      let url = "http://www.phptrain.cn/api/user/getLoginUser";
+      this.$http.get(url).then(res => {
+        if (res.data.code && res.data) {
+          if (res.data.result.auditStatus ) {
+            this.unComplete = res.data.result.auditStatus
+          }  
+        }
+      });
     },
-    data() {
-      return {
-        data:{
-            task:{
-                // iconPath:'http://img1.qunarzz.com/piao/fusion/1710/a6/83f636bd75ae6302.png'
+    goback() {
+      this.$router.go(-1);
+    },
+    getDetail() {
+      let id = this.$router.history.current.params.id;
+      let url =
+        "http://www.phptrain.cn/api/unauth/task/getTaskInfo?taskId=" + id;
+      var param = {
+        taskId: id
+      };
+      this.$http
+        .post(url, param, {
+          headers: {
+            "Content-Type": "application/json"
+          }
+        })
+        .then(res => {
+          if (res.data.message === "成功") {
+            if (res.data.result) {
+              this.data = res.data.result;
             }
-        },
-        type:'',  // myTask--我的任务页面跳转    robTask-任务列表跳转   
-        roleList:[{}],
-        buttonText:'', // 详情  提交
-        showss:false,
-        tips:''  ,
-        commitAddress:'',
-        remark:'' ,
-        unComplete:''  //true 信息不完整
-    
+          } else {
+            this.tips = res.data.message;
+            this.showTips();
+          }
+        });
+    },
+    getUserTaskInfo() {
+      let id = this.$router.history.current.params.id;
+      let url = "http://www.phptrain.cn/api/task/getUserTaskInfo?taskId=" + id;
+      var param = {
+        taskId: id
+      };
+      this.$http
+        .post(url, param, {
+          headers: {
+            "Content-Type": "application/json"
+          }
+        })
+        .then(res => {
+          if (res.data.message === "成功") {
+            if (res.data.result) {
+              this.data = res.data.result;
+            }
+          } else {
+            this.tips = res.data.message;
+            this.showTips();
+          }
+        });
+    },
+    showTips(callback) {
+      this.showss = true;
+      var _this = this;
+      setTimeout(function() {
+        _this.showss = false;
+        if (callback) {
+          callback();
+        }
+      }, 1000);
+    },
+    holdTask(item) {
+      if (!localStorage.token) {
+        this.tips = "您尚未登录，请先登录";
+        this.showTips();
+        var _this = this;
+        setTimeout(function() {
+          _this.$router.push({ path: "/login" });
+        }, 1500);
+        return;
       }
+      if (this.unComplete =='0') {
+        this.tips = "请先完善个人信息";
+        this.showTips();
+        var _this = this;
+        setTimeout(function() {
+          _this.$router.push({ path: "/personinformation" });
+        }, 2000);
+        return;
+      } else if(this.unComplete =='-1'){
+        this.tips = "用户信息审核中暂不可抢任务";
+        this.showTips();
+        return
+      }
+
+      if (item && item.isLevelEnough === "0") {
+        this.tips =
+          "您的开发评级为：" + item.userlevel + "，请选择符合您开发等级的任务";
+        this.showTips();
+        return;
+      }
+
+      let id = this.$router.history.current.params.id;
+      if (item.id) {
+        id = item.id;
+      }
+      let url = "http://www.phptrain.cn/api/task/holdTask?taskDetailId=" + id;
+      var param = {
+        taskDetailId: id
+      };
+      this.$http
+        .post(url, param, {
+          headers: {
+            Token: "",
+            Agent: "",
+            "Content-Type": "application/json"
+          }
+        })
+        .then(res => {
+          if (res.data.message === "成功") {
+            this.tips = "恭喜你！抢到任务 ";
+            this.showTips();
+            var _this = this;
+            setTimeout(function() {
+              _this.$router.push({ path: "/task" });
+            }, 1500);
+            return;
+          } else {
+            this.tips = res.data.message;
+            this.showTips();
+          }
+        });
     },
-    methods: {
-        getLoginUser(){
-            let url = "http://www.phptrain.cn/api/user/getLoginUser"
-            this.$http.get(url).then((res)=>{
-            if(res.data.code && res.data){
-                if(res.data.result.auditStatus =='0'){
-                    this.unComplete = true
-                }
-            }
-            })
-        },
-        goback(){
-            this.$router.go(-1)
-        },
-        getDetail(){
-            let id = this.$router.history.current.params.id
-            let url = "http://www.phptrain.cn/api/unauth/task/getTaskInfo?taskId="+id
-            var param = {
-                    taskId:id
-                }
-			    this.$http.post(url,param,{
-					headers: {
-					    'Content-Type': 'application/json'
-					}
-			 }).then((res)=>{
-					if(res.data.message==="成功"){
-						if(res.data.result){
-                            this.data= res.data.result
-                        }
-					}else{
-						  
-					}
-			 })	
-
-        },
-        getUserTaskInfo(){
-             let id = this.$router.history.current.params.id
-             let url = "http://www.phptrain.cn/api/task/getUserTaskInfo?taskId="+id
-				var param = {
-                    taskId:id
-                }
-			    this.$http.post(url,param,{
-					headers: {                      
-					    'Content-Type': 'application/json'
-					}
-			 }).then((res)=>{
-					if(res.data.message==="成功"){
-                        if(res.data.result){
-                            this.data = res.data.result
-                        }					
-					}else{
-						this.tips = res.data.message
-					    this.showTips()   
-					}
-			 })
-        },
-        showTips(callback){
-			this.showss= true;
-			var _this = this;
-            setTimeout(function(){
-                _this.showss = false
-                if(callback){
-                    callback()
-                }},1000)
-		},
-        holdTask(item){
-                console.log(item)
-            
-            if(!localStorage.token){
-                this.tips ="您尚未登录，请先登录"
-				this.showTips()
-                var _this = this
-                setTimeout(function(){
-                    _this.$router.push({path:"/login"})    
-                },1500)
-				return 
-            } 
-            if(this.unComplete) {
-                this.tips ="请先完善个人信息"
-                this.showTips()
-                var _this = this
-                setTimeout(function(){
-                    _this.$router.push({path:"/personinformation"})                       
-                },2000)
-                return
-            }
-
-            if(item && item.isLevelEnough ==='0'){
-                this.tips ="您的开发评级为："+item.userlevel+"，请选择符合您开发等级的任务"
-				this.showTips()
-				return
-            }
-            
-            let id = this.$router.history.current.params.id
-            if(item.id){
-                id = item.id
-            }
-            let url = "http://www.phptrain.cn/api/task/holdTask?taskDetailId="+id
-            var param = {
-                taskDetailId:id
-            }
-            this.$http.post(url,param,{
-                headers: {
-                    'Token':'',
-                    'Agent':'',
-                    'Content-Type': 'application/json'
-                }
-                }).then((res)=>{
-                if(res.data.message==="成功"){
-                    this.tips ="恭喜你！抢到任务 "
-                    this.showTips()
-                    var _this=this
-                    setTimeout(function(){
-                        _this.$router.push({path:"/task"})    
-                       },1500)
-                    return 
-                    
-                }else{
-                    this.tips = res.data.message
-					this.showTips()   
-                }
-            })	
-        },
-        commit(){
-            let id = this.$router.history.current.params.id
-             let url = "http://www.phptrain.cn/api/task/commitUserTask?taskId="+id
-				var param = {
-                    taskId:id,
-                    commitAddress:this.commitAddress,
-                    remark:this.remark
-                }
-			    this.$http.post(url,param,{
-					headers: {                      
-					    'Content-Type': 'application/json'
-					}
-			 }).then((res)=>{
-					if(res.data.message==="成功"){
-                        
-                        this.tips = '提交成功'
-                        this.showTips() 
-                        var _this=this
-                        setTimeout(function(){
-                            _this.$router.push({path:"/task"})    
-                        },1500)
-                    				
-					}else{
-						this.tips = res.data.message
-					    this.showTips()   
-					}
-			 })
-        }
-             	
-        
+    commit() {
+      let id = this.$router.history.current.params.id;
+      if(!this.commitAddress){
+        this.tips = "请输入提交地址 ";
+        this.showTips();
+        return
+      }
+      let url = "http://www.phptrain.cn/api/task/commitUserTask?taskId=" + id;
+      var param = {
+        taskId: id,
+        commitAddress: this.commitAddress,
+        remark: this.remark
+      };
+      this.$http
+        .post(url, param, {
+          headers: {
+            "Content-Type": "application/json"
+          }
+        })
+        .then(res => {
+          if (res.data.message === "成功") {
+            this.tips = "提交成功";
+            this.showTips();
+            var _this = this;
+            setTimeout(function() {
+              _this.$router.push({ path: "/task" });
+            }, 1500);
+          } else {
+            this.tips = res.data.message;
+            this.showTips();
+          }
+        });
     },
-    mounted() {
-        this.getLoginUser()
-        this.type = this.$router.history.current.params.type 
-        this.buttonText = this.$router.history.current.params.buttonText
-        if(this.type=='robTask') {
-            this.getDetail()            
-        } else {
-            this.getUserTaskInfo()            
+    recommend() {
+      this.tips = "请右上角点击分享";
+      this.showTips();
+      let us = location.href.split("#")[0];
+      let url = "http://www.phptrain.cn/api/unauth/weixin/getWxSign";
+			var param = new FormData();
+			var that = this
+      param.append("url", us);
+      this.$http.post(url, param, {}).then(res => {
+        console.log(res);
+        if (res.data.code === 200) {
+          wx.config({
+            debug: false, // 开启调试模式,调用的所有api的返回值会在客户端alert出来，若要查看传入的参数，可以在pc端打开，参数信息会通过log打出，仅在pc端时才会打印。
+            appId: res.data.result.appId, // 必填，公众号的唯一标识
+            timestamp: res.data.result.timestamp, // 必填，生成签名的时间戳
+            nonceStr: res.data.result.nonceStr, // 必填，生成签名的随机串
+            signature: res.data.result.signature, // 必填，签名
+            jsApiList: ["onMenuShareAppMessage", "onMenuShareQQ"] // 必填，需要使用的JS接口列表
+          });
+          wx.ready(function() {
+            console.log(1111);
+            wx.onMenuShareAppMessage({
+							title: that.data.task.name, // 分享标题
+							desc:that.data.task.description,
+              link: us, // 分享链接，该链接域名或路径必须与当前页面对应的公众号JS安全域名一致
+              imgUrl: that.data.task.iconPath, // 分享图标
+              success: function() {
+                // 用户点击了分享后执行的回调函数
+                alert("分享微信好友成功");
+							},
+							cancel: function() {
+                // 用户取消分享后执行的回调函数
+                alert("取消分享");
+              }
+            });
+            wx.onMenuShareQQ({
+             	title: that.data.task.name, // 分享标题
+							desc:that.data.task.description,
+              link: us, // 分享链接，该链接域名或路径必须与当前页面对应的公众号JS安全域名一致
+              imgUrl: that.data.task.iconPath, // 分享图标
+              success: function() {
+                // 用户确认分享后执行的回调函数
+                alert("分享QQ好友成功");
+              },
+              cancel: function() {
+                // 用户取消分享后执行的回调函数
+                alert("取消分享");
+              }
+            });
+          });
         }
-
+      });
     }
+  },
+  mounted() {
+    this.getLoginUser();
 
+    this.type = this.$router.history.current.params.type;
+    this.buttonText = this.$router.history.current.params.buttonText;
+    if (this.type == "robTask") {
+      this.getDetail();
+    } else if (this.type == "myTask") {
+      this.getUserTaskInfo();
+    } else {
+      this.getDetail();
+    }
   }
+};
 </script>
 
 <style scoped lang="less">
-.tips{
-    position: absolute;
-    background-color: #00AAEE;
-    color:white;
-    text-align: center;
-    width:200px;
-    height: 50px;
-    line-height: 50px;
-    left:50%;
-    top:50%;
-    margin-left: -100px;
-    margin-top: -120px;
-    border-radius: 5px;
+.tips {
+  position: absolute;
+  background-color: #00aaee;
+  color: white;
+  text-align: center;
+  width: 200px;
+  height: 50px;
+  line-height: 50px;
+  left: 50%;
+  top: 50%;
+  margin-left: -100px;
+  margin-top: -120px;
+  border-radius: 5px;
 }
 .space {
-    background: #eee;
-    height: 10px;
+  background: #eee;
+  height: 10px;
 }
 .left {
-    float: left;
+  float: left;
 }
 .right {
-    float: right;
+  float: right;
 }
 .cont-title {
-    width: 60px;
-    height: 14px;
-    line-height: 14px;
-    padding-left: 5px;
-    margin-top: 20px;
-    font-size: 14px;
-    color: #00AAEE;
-    border-left: #00AAEE solid 2px;
+  width: 60px;
+  height: 14px;
+  line-height: 14px;
+  padding-left: 5px;
+  margin-top: 20px;
+  font-size: 14px;
+  color: #00aaee;
+  border-left: #00aaee solid 2px;
 }
 .orange {
-    font-size: 15px;
-    color: #FFAE0F;
+  font-size: 15px;
+  color: #ffae0f;
 }
 .red {
-        color:#EF5A50;
+  color: #ef5a50;
 }
-.header-top{
-   height: 50px;
-   line-height: 50px;
-   top: 0;
-   left: 0;
-   right: 0;
-   .header-wrapper{
-     text-align: center;
-     .img-wrapper{
-       position: absolute;
-       width: 30px;
-       left: 0;
-       right: 0;
-       img{
-         width: 24px;
-       }
-     }
-   }
- }
-.taskCont {
-    padding: 15px;
-    padding-bottom: 25px;
-    font-size: 14px;
-    font-family: MicrosoftYaHei;
-    .title {
-        padding-bottom: 15px;
-        border-bottom: #E0E4E5 solid 1px;
-        .tackImg {
-            width: 100px;
-            height: 100px;
-            vertical-align: top;
-        }
-        .titleCont {
-            margin-left: 20px;
-            padding-top: 10px;
-        }
-        
-        p{
-            color:#A1ACB4;
-            font-size: 15px;            
-            margin-top: 10px
-        }
-        .orange {
-            font-size: 15px;
-            color: #FFAE0F;
-        }
-        overflow: hidden;
+.header-top {
+  height: 50px;
+  line-height: 50px;
+  top: 0;
+  left: 0;
+  right: 0;
+  .header-wrapper {
+    text-align: center;
+    .img-wrapper {
+      position: absolute;
+      width: 30px;
+      left: 0;
+      right: 0;
+      img {
+        width: 24px;
+      }
     }
-   
-    .content {
-        p {
-            margin: 15px 0 25px 0;
-         }
-       
-        .cont-detail {
-            font-size: 14px;
-            margin-top: 15px;
-        }
-    }
-    
   }
+}
+.taskCont {
+  padding: 15px;
+  padding-bottom: 25px;
+  font-size: 14px;
+  font-family: MicrosoftYaHei;
+  .title {
+    padding-bottom: 15px;
+    border-bottom: #e0e4e5 solid 1px;
+    .tackImg {
+      width: 100px;
+      height: 100px;
+      vertical-align: top;
+    }
+    .titleCont {
+      margin-left: 20px;
+      padding-top: 10px;
+    }
+
+    p {
+      color: #a1acb4;
+      font-size: 15px;
+      margin-top: 10px;
+    }
+    .orange {
+      font-size: 15px;
+      color: #ffae0f;
+    }
+    overflow: hidden;
+  }
+
+  .content {
+    p {
+      margin: 15px 0 25px 0;
+    }
+
+    .cont-detail {
+      font-size: 14px;
+      margin-top: 15px;
+    }
+  }
+}
 .bottom {
-    font-size: 14px;
-    color: #2E353B;
-    padding: 15px;
-    p {     
-        margin-top: 20px;
-        i {
-            color: #A1ACB4;
-        }
-        .orange {
-            font-size: 15px;
-            color: #FFAE0F;
-        }
+  font-size: 14px;
+  color: #2e353b;
+  padding: 15px;
+  p {
+    margin-top: 20px;
+    i {
+      color: #a1acb4;
     }
-   
-    .button {
-        width:100%;
-        height: 40px;
-        line-height: 40px;
-        text-align: center;
-        font-size: 18px;
-        border-radius: 4px;
-        margin-top: 15px;
+    .orange {
+      font-size: 15px;
+      color: #ffae0f;
     }
-    .one {
-        background-color: #FFAE0F;
-        color: #fff;
-    }
-    .two {
-        background-color: #00AAEE;
-        color: #fff;           
-    }
-    .three {
-        border: #00AAEE 1px solid;
-        color: #00AAEE;   
-    }
-    .four {
-        background-color:#e6e0e0;
-    }
-    input {
-        width: 100%;
-        // display: block;
-    }
-    .input-top {
-        height: 40px;
-    }
-    .input-bottom {
-        height: 125px;
-    }
-    .inp{
-        font-size:15px;
-        background-color: #FAFAFA;
-        border:1px solid #E7E7E7;
-        border-radius: 5px;
-        margin-top:20px;
-        padding-left: 10px;
-        box-sizing: border-box;
-    }
+  }
+
+  .button {
+    width: 100%;
+    height: 40px;
+    line-height: 40px;
+    text-align: center;
+    font-size: 18px;
+    border-radius: 4px;
+    margin-top: 15px;
+  }
+  .one {
+    background-color: #ffae0f;
+    color: #fff;
+  }
+  .two {
+    background-color: #00aaee;
+    color: #fff;
+  }
+  .three {
+    border: #00aaee 1px solid;
+    color: #00aaee;
+  }
+  .four {
+    background-color: #e6e0e0;
+  }
+  input {
+    width: 100%;
+    // display: block;
+  }
+  .input-top {
+    height: 40px;
+  }
+  .input-bottom {
+    height: 125px;
+  }
+  .inp {
+    font-size: 15px;
+    background-color: #fafafa;
+    border: 1px solid #e7e7e7;
+    border-radius: 5px;
+    margin-top: 20px;
+    padding-left: 10px;
+    box-sizing: border-box;
+  }
 }
 .robTask {
-   padding: 13px;
-   .taskPer{
-        font-size: 13px;
-        margin-top: 10px;
-        display: flex;
-        height: 40px;
-        border-bottom: 1px solid #E0E4E5;
-   }
-   .robTask-flex {
-        font-size: 13px;
-        margin-top: 23px;
-        display: flex;
-        height: 40px;
-        border-bottom: 1px solid #E0E4E5;
-        .one {
-            flex: 3;
-            padding-top: 5px;
-        }
-        .two {
-            // flex: ;
-            padding-top: 5px;
-            color: #A1ACB4
-        }
-        .three {
-            flex: 2;
-            margin-left: 20px;
-            text-align: center;
-            padding-top: 5px;
-            color:#FFAE0F;
-            font-size: 14px
-        }
-        .four {
-            flex: 2;
-            margin-left: 20px;
-            text-align: center;
-            height: 30px;
-            line-height: 30px;
-            background-color: #e6e0e0;
-            color:#A1ACB4;
-            border-radius: 5px;
-        }
-        .five {
-            flex: 2;
-            margin-left: 20px;
-            text-align: center;
-            height: 30px;
-            line-height: 30px;
-            background-color: #FFAE0F;
-            color: #fff;
-            border-radius: 5px;
-        }
-   }
+  padding: 13px;
+  .taskPer {
+    font-size: 13px;
+    margin-top: 10px;
+    display: flex;
+    height: 40px;
+    border-bottom: 1px solid #e0e4e5;
+  }
+  .robTask-flex {
+    font-size: 13px;
+    margin-top: 23px;
+    display: flex;
+    height: 40px;
+    border-bottom: 1px solid #e0e4e5;
+    .one {
+      flex: 3;
+      padding-top: 5px;
+    }
+    .two {
+      // flex: ;
+      padding-top: 5px;
+      color: #a1acb4;
+    }
+    .three {
+      flex: 2;
+      margin-left: 20px;
+      text-align: center;
+      padding-top: 5px;
+      color: #ffae0f;
+      font-size: 14px;
+    }
+    .four {
+      flex: 2;
+      margin-left: 20px;
+      text-align: center;
+      height: 30px;
+      line-height: 30px;
+      background-color: #e6e0e0;
+      color: #a1acb4;
+      border-radius: 5px;
+    }
+    .five {
+      flex: 2;
+      margin-left: 20px;
+      text-align: center;
+      height: 30px;
+      line-height: 30px;
+      background-color: #ffae0f;
+      color: #fff;
+      border-radius: 5px;
+    }
+  }
 }
-
-  
 </style>

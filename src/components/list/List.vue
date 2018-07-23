@@ -8,13 +8,14 @@
       <div class="space"></div>
     </div> -->
     <list-header @change="hanleSelectTack"  @fetch="handleFetch"></list-header>
+    
       <scroll class="wrapper" ref="wrapper"
-          :data="tempTaskList"  :totalSize="totalPages" :pageIndex="pageIndex"  :last="Islast"
+          :data="tempTaskList"  :totalSize="totalPages" :pageIndex="pageIndex"  :last="Islast" 
           :pulldown="pulldown" :pullup="pullup" 
           @pulldown="getTaskInfo" @scrollToEnd="loadMore"   > 
           <div class="list" ref="list">
               <div class="item  border-bottom" v-for="item of tempTaskList">
-                <div class="left">
+                <div class="left" :class="{teamMark:item.isTeam}">
                   <img :src="item.iconPath" alt="" class="tackImg" />
                   <div class="task-rank">
                     <p class="name">{{item.name}}</p>
@@ -35,7 +36,7 @@
      <div class="loading-container" v-show="hasCode">
               <loading></loading>
             </div>
-    <tabs></tabs>
+    <tabs @clickTab="clickTab"></tabs>
   </div>
 </template>
 <script>
@@ -46,6 +47,7 @@ import Bscroll from 'better-scroll'
   import Loading from '../../base/loading/Loading'
   export default {
     name: 'List',
+    inject:['reload'],
     components: {
       ListHeader,
       Tabs,
@@ -68,10 +70,18 @@ import Bscroll from 'better-scroll'
         totalPages:1,
         Islast:'',
         ListSort:'',
+       isTeam:false,
+        taskReward:'',
+        taskCategory:2,
+        taskSort:'',
+        clientHeight:document.documentElement.clientHeight-60,
       }
     },
  
     methods: {
+    	clickTab(){
+	      this.reload()
+	    },
     	//重新筛选完回到顶部
    		scrollTo() {
         this.$refs.wrapper.scrollTo(0, 0, 10, 'bounce')
@@ -83,17 +93,35 @@ import Bscroll from 'better-scroll'
         let url = "http://www.phptrain.cn/api/unauth/task/getTaskPage"
 				var param = new FormData()
 				this.pageIndex=1
-				this.ListSort=2
+				this.totalPages=1
 				this.pullup=true
+				if(this.taskCategory!==2){
+				  param.append("category",this.taskCategory)
+				}
+				if(this.taskType!==''){
+          param.append("level",this.taskType)
+        }
+				if(this.taskSort!==''){
+          param.append("reward",this.ListSort)
+        }
+
 				param.append("pageIndex",this.pageIndex)
 				param.append("pageSize",this.pageSize)
+        
         this.$http.post(url,param).then((res)=>{
           if(res.data.code&&res.data){
             if(res.data.code){
               this.hasCode=false
             }
              const data=res.data.result
+              data.content.forEach(function(list) {
+               if(list.category==1){
+                 list.isTeam=true
+               }
+               
+            })
             this.taskList=data.content
+             
             this.tempTaskList=data.content
             this.totalPages=data.totalPages
             if(this.pageIndex==this.totalPages&& data.last){
@@ -117,12 +145,13 @@ import Bscroll from 'better-scroll'
         var param = new FormData()
         param.append("pageIndex",this.pageIndex)
         param.append("pageSize",this.pageSize)
-        if(this.ListSort==1){
-           param.append("reward",1)
+
+        if(this.ListSort!==''){
+          param.append("reward",this.ListSort)
         }
-         if(this.ListSort==0){
-           param.append("reward",0)
-        }
+
+       
+        
        if(this.pullup){
        	  this.$http.post(url,param,{
           headers: {
@@ -156,30 +185,47 @@ import Bscroll from 'better-scroll'
         var reward=2 //奖励默认不限
         if(type === "A级"){
            grade = "A"
+           this.taskType="A"
         }else if (type === "B级"){
+          
           grade = "B"
+          this.taskType="B"
+          
         }else if (type === "C级"){
+          
           grade = "C"
+          this.taskType="C"
+          
         }
         else if (type === "个人"){
+          
           category = 0
+          this.taskCategory=0
         }
         else if (type === "团队"){
+         
           category =1
+          this.taskCategory=1
+          
         }
         else if (type === "奖励升序"){
           reward	 =1
           this.ListSort=1
+          this.taskSort=1
         }
         else if (type === "奖励降序"){
           reward	 =0
        this.ListSort=0
+       this.taskSort=0
         }
         else{
           grade = '';
           category=2;
-           reward	 =2
-            this.ListSort=2
+          reward	 =2
+          this.ListSort=2
+          this.taskCategory=2
+          this.taskType=''
+          this.taskSort=''
         }
 
         // 发送请求
@@ -208,7 +254,14 @@ import Bscroll from 'better-scroll'
           const data=res.data.result
           if(res.data.code&&res.data){
             this.hasData=false
+                   data.content.forEach(function(list) {
+               if(list.category==1){
+                 list.isTeam=true
+               }
+               
+            })
             this.taskList=data.content
+            
               this.totalPages=data.totalPages
             this.tempTaskList=data.content
          
@@ -280,6 +333,17 @@ import Bscroll from 'better-scroll'
       justify-content: left;
       align-items: center;
       padding: 10px 15px;
+      .teamMark:after{
+          content: '\56E2\961F';
+          position: absolute;
+          left: 46px;
+          top: 2px;
+          color: #fff;
+          background: #EF5A50;
+          border-radius: 15px;
+          font-size: 12px;
+          padding: 2px 5px;
+        }
       .left {
         flex: 2;
         .task-rank {
@@ -302,6 +366,7 @@ import Bscroll from 'better-scroll'
           vertical-align: top;
           border: 1px solid #eee;
         }
+        
       }
       .center {
         flex: 1;

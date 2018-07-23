@@ -19,7 +19,7 @@
       <div class="list border-bottom" ref="wrapper">
         <div>
           <div class="item  border-bottom" v-for="(item,index) of TaskList" :key="index">
-            <div class="left">
+            <div class="left" :class="{teamMark:item.isTeam}">
               <img :src="item.iconPath" alt="" class="tackImg" />
               <div class="task-rank">
                 <p class="name">{{item.name}}</p>
@@ -42,7 +42,7 @@
       </div>
     </router-link>
     
-    <tabs></tabs>
+    <tabs @clickTab="clickTab"></tabs>
   </div>
 </template>
 
@@ -53,11 +53,11 @@
   import Loading from '../../base/loading/Loading'
   export default {
     name: "Task",
+    inject:['reload'],
     components: {
       Tabs,
       Loading
     },
-    inject:['reload'],
     data() {
       return {
         active: 0,
@@ -65,6 +65,7 @@
         taskStatus: '',
         buttonText: '',
         token: null,
+        isTeam:false,
         navs: [{
             id: '1',
             name: '所有任务',
@@ -85,6 +86,9 @@
       }
     },
     methods: {
+    	clickTab(){
+	      this.reload()
+	    },
       goback() {
         this.$router.go(-1)
       },
@@ -126,6 +130,9 @@
                 list.buttonText = '详情'
 
               }
+              if(list.category==1){
+                 list.isTeam=true
+                }
             })
             this.TaskList = dataList
           }
@@ -151,9 +158,12 @@
                   list.taskStatus = '进行中'
                   list.buttonText = '提交'
 
-                } else {
+                }  if(list.taskStatus === 1) {
                   list.taskStatus = '已完成'
                   list.buttonText = '详情'
+                }
+                if(list.category==1){
+                 list.isTeam=true
                 }
               })
               this.TaskList = dataList
@@ -174,11 +184,10 @@
       }
     },
     created() {
-//    this.reload()
 //    setTimeout(() => {
 //      this.getAllTask()
 //    }, 1000)
- this.getAllTask()
+   this.getAllTask()
     },
     watch: {
       TaskList(a) {
@@ -190,6 +199,7 @@
 </script>
 
 <style scoped lang="less">
+.list{background: #fff;}
   .space {
     background: #eee;
     height: 10px;
@@ -241,6 +251,17 @@
       justify-content: left;
       align-items: center;
       padding: 10px 15px;
+      .teamMark:after{
+          content: '\56E2\961F';
+          position: absolute;
+          left: 46px;
+          top: 2px;
+          color: #fff;
+          background: #EF5A50;
+          border-radius: 15px;
+          font-size: 12px;
+          padding: 2px 5px;
+        }
       .left {
         flex: 2;
         .task-rank {

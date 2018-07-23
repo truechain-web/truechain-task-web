@@ -4,13 +4,13 @@
 				 <span class="denglu">登录</span>
 			</div> -->
 		  <div class="login-inp">
-				<div ><input type="text" class="inp" v-model="phone" placeholder="电话号码"/></div>
+				<div ><input type="text" class="inp" v-model="phone" placeholder="电话号码" maxlength="11"/></div>
 				<div class="inpx">
 						<input class="inpx-l" type="text" placeholder="验证码" v-model="code">
 						<input class="inpx-r" type="button" value="获取验证码" @click="clock" ref="clock" :style="clockStyle">
 				</div>
 				<div class="tip">
-						<input type="checkbox"  class="checkbox" checked/>
+						<input type="checkbox"  class="checkbox" v-model="checked"/>
 						<span>我已阅读</span><span style="color:#00AAEE" @click="optiondetail">《使用说明》</span>
 				</div>
 			</div>
@@ -36,7 +36,9 @@ export default {
 					color:"white",	
 				},
 				 tips:"",
-				 showss:false
+				 showss:false,
+				 checkCode:"",
+				 checked:true
     }
 	},
   methods:{
@@ -44,16 +46,26 @@ export default {
 			 this.$router.push({path:"/regist"})
 		},
 		login(){
+			 if (!this.checked){
+				   this.tips ="请确定已阅读使用说明"
+					 this.showTips()
+					 return
+			 }
 			 if(!this.phone || !this.code){
 				   this.tips ="请填写登录信息"
 					 this.showTips()
 					 return
 			 }
-			if(!(/^1[3|4|5|7|8|9][0-9]\d{4,8}$/.test(this.phone))){ 
+			if(!(/^1[3|4|5|6|7|8|9][0-9]\d{4,8}$/.test(this.phone))){ 
 				this.tips ="手机号格式错误"
 				this.showTips()
 				return false; 
 			} 
+			if(this.checkCode!=this.code){
+				this.tips ="输入验证码有误"
+				this.showTips()
+				return false; 
+			}
 			 let url = "http://www.phptrain.cn/api/unauth/account/login"
 				var param = new FormData()
 				param.append("mobile",this.phone)
@@ -75,8 +87,14 @@ export default {
 						 })
 						 this.$router.push({name:"List"})
 					}else{
-						this.tips ="登录失败请重新登录"
+						if(res.data.message==="该用户不存在"){
+							this.tips ="该账号尚未注册"
 					    this.showTips()
+						}else{
+							this.tips ="登录失败请重新登录"
+					    this.showTips()
+						}
+					
 					}
 			 })			 
 		},
@@ -95,6 +113,7 @@ export default {
 				let url = 'http://www.phptrain.cn/api/unauth/account/verifyCode/'+this.phone
 				this.$http.get(url).then((res)=>{
 						console.log(res)
+						this.checkCode = res.data.result
 				}).catch((err)=>{
 					console.log(err)
 				})
