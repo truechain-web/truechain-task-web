@@ -84,7 +84,7 @@
 import Bscroll from "better-scroll";
 import Tabs from "../tab/Tab";
 import axios from "axios";
-import wx from "weixin-js-sdk"
+import wx from "weixin-js-sdk";
 export default {
   name: "TaskDetail",
   components: {
@@ -140,7 +140,7 @@ export default {
               this.data = res.data.result;
             }
           } else {
-              this.tips = res.data.message;
+            this.tips = res.data.message;
             this.showTips();
           }
         });
@@ -263,56 +263,60 @@ export default {
             this.showTips();
           }
         });
-		},
-		recommend(){
-				this.tips= "请右上角点击分享"
-				this.showTips()
-				let us = location.href.split('#')[0]
-				let url = "http://www.phptrain.cn/api/unauth/weixin/getWxSign"
-		  	var param = new FormData()
-				param.append("url",us)
-				this.$http.post(url,param,{
-				}).then(res=>{
-					console.log(res)
-					if(res.data.code ===  200){
-							wx.config({
-								debug: false, // 开启调试模式,调用的所有api的返回值会在客户端alert出来，若要查看传入的参数，可以在pc端打开，参数信息会通过log打出，仅在pc端时才会打印。
-								appId: res.data.result.appId, // 必填，公众号的唯一标识
-								timestamp: res.data.result.timestamp, // 必填，生成签名的时间戳
-								nonceStr: res.data.result.nonceStr, // 必填，生成签名的随机串
-								signature: res.data.result.signature,// 必填，签名
-								jsApiList: ["onMenuShareAppMessage","onMenuShareQQ"] // 必填，需要使用的JS接口列表
-						});
-						wx.ready(function(){
-							 console.log(1111)
-							 	wx.onMenuShareAppMessage({
-										title: "初链任务领取", // 分享标题
-										link: us, // 分享链接，该链接域名或路径必须与当前页面对应的公众号JS安全域名一致
-										imgUrl: "https://www.baidu.com/img/baidu_jgylogo3.gif", // 分享图标
-										success: function () {
-										// 用户点击了分享后执行的回调函数
-												alert("分享微信好友成功")
-										}
-								});
-								wx.onMenuShareQQ({
-									title: "初链任务领取", // 分享标题
-									desc: '初链任务平台', // 分享描述
-									link: us, // 分享链接
-									imgUrl: "https://www.baidu.com/img/baidu_jgylogo3.gif",// 分享图标
-									success: function () {
-									// 用户确认分享后执行的回调函数
-											alert("分享QQ好友成功")
-									},
-									cancel: function () {
-									// 用户取消分享后执行的回调函数
-									     alert("取消分享")
-									}
-								});
-						})
-					
-					}
-				})
-		}
+    },
+    recommend() {
+      this.tips = "请右上角点击分享";
+      this.showTips();
+      let us = location.href.split("#")[0];
+      let url = "http://www.phptrain.cn/api/unauth/weixin/getWxSign";
+			var param = new FormData();
+			var that = this
+      param.append("url", us);
+      this.$http.post(url, param, {}).then(res => {
+        console.log(res);
+        if (res.data.code === 200) {
+          wx.config({
+            debug: false, // 开启调试模式,调用的所有api的返回值会在客户端alert出来，若要查看传入的参数，可以在pc端打开，参数信息会通过log打出，仅在pc端时才会打印。
+            appId: res.data.result.appId, // 必填，公众号的唯一标识
+            timestamp: res.data.result.timestamp, // 必填，生成签名的时间戳
+            nonceStr: res.data.result.nonceStr, // 必填，生成签名的随机串
+            signature: res.data.result.signature, // 必填，签名
+            jsApiList: ["onMenuShareAppMessage", "onMenuShareQQ"] // 必填，需要使用的JS接口列表
+          });
+          wx.ready(function() {
+            console.log(1111);
+            wx.onMenuShareAppMessage({
+							title: that.data.task.name, // 分享标题
+							desc:that.data.task.description,
+              link: us, // 分享链接，该链接域名或路径必须与当前页面对应的公众号JS安全域名一致
+              imgUrl: that.data.task.iconPath, // 分享图标
+              success: function() {
+                // 用户点击了分享后执行的回调函数
+                alert("分享微信好友成功");
+							},
+							cancel: function() {
+                // 用户取消分享后执行的回调函数
+                alert("取消分享");
+              }
+            });
+            wx.onMenuShareQQ({
+             	title: that.data.task.name, // 分享标题
+							desc:that.data.task.description,
+              link: us, // 分享链接，该链接域名或路径必须与当前页面对应的公众号JS安全域名一致
+              imgUrl: that.data.task.iconPath, // 分享图标
+              success: function() {
+                // 用户确认分享后执行的回调函数
+                alert("分享QQ好友成功");
+              },
+              cancel: function() {
+                // 用户取消分享后执行的回调函数
+                alert("取消分享");
+              }
+            });
+          });
+        }
+      });
+    }
   },
   mounted() {
     this.getLoginUser();
@@ -323,8 +327,8 @@ export default {
       this.getDetail();
     } else if (this.type == "myTask") {
       this.getUserTaskInfo();
-    } else  {
-      this.getDetail();        
+    } else {
+      this.getDetail();
     }
   }
 };
