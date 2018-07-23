@@ -71,8 +71,8 @@
         </div>
         <!-- 未完成待提交 -->
         <div class="bottom" v-if="type==='myTask' && buttonText =='提交' ">
-            <input class="input-top inp" placeholder="提交地址" v-modal="commitAddress"/> 
-            <input class="input-bottom inp"  placeholder="说明" v-modal="remark"/>
+            <input class="input-top inp" placeholder="提交地址" v-model="commitAddress"/> 
+            <input class="input-bottom inp"  placeholder="说明" v-model="remark"/>
             <div class='button two'  @click="commit">提交审核</div>                                  
         </div>
         <div class='space'></div>                  
@@ -202,12 +202,13 @@ export default {
         return
       }
 
-      if (item && item.isLevelEnough === "0") {
-        this.tips =
-          "您的开发评级为：" + item.userlevel + "，请选择符合您开发等级的任务";
-        this.showTips();
-        return;
-      }
+      // if (item && item.isLevelEnough === "0") {
+      //   console.log(1111)
+      //   this.tips =
+      //     "您的开发评级为：" + item.userlevel + "，请选择符合您开发等级的任务";
+      //   this.showTips();
+      //   return;
+      // }
 
       let id = this.$router.history.current.params.id;
       if (item.id) {
@@ -241,6 +242,7 @@ export default {
         });
     },
     commit() {
+      
       let id = this.$router.history.current.params.id;
       if(!this.commitAddress){
         this.tips = "请输入提交地址 ";
@@ -282,7 +284,6 @@ export default {
 			var that = this
       param.append("url", us);
       this.$http.post(url, param, {}).then(res => {
-        console.log(res);
         if (res.data.code === 200) {
           wx.config({
             debug: false, // 开启调试模式,调用的所有api的返回值会在客户端alert出来，若要查看传入的参数，可以在pc端打开，参数信息会通过log打出，仅在pc端时才会打印。
@@ -293,7 +294,6 @@ export default {
             jsApiList: ["onMenuShareAppMessage", "onMenuShareQQ"] // 必填，需要使用的JS接口列表
           });
           wx.ready(function() {
-            console.log(1111);
             wx.onMenuShareAppMessage({
 							title: that.data.task.name, // 分享标题
 							desc:that.data.task.description,
@@ -348,10 +348,12 @@ export default {
   position: absolute;
   background-color: #00aaee;
   color: white;
-  text-align: center;
+  text-align: left;
   width: 200px;
-  height: 50px;
-  line-height: 50px;
+  padding: 20px 20px;
+  // height: 50px;
+  // line-height: 50px;
+  word-break:break-all;
   left: 50%;
   top: 50%;
   margin-left: -100px;
