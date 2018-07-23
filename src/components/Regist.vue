@@ -4,13 +4,13 @@
 				 <span class="denglu">登录</span>
 			</div> -->
 		  <div class="login-inp">
-				<div ><input type="text" class="inp" v-model="phone" placeholder="注册电话号码"/></div>
+				<div ><input type="text" class="inp" v-model="phone" placeholder="注册电话号码" maxlength="11"/></div>
 				<div class="inpx">
 						<input class="inpx-l" type="text" placeholder="验证码" v-model="code">
 						<input class="inpx-r" type="button" value="获取验证码" @click="clock" ref="clock" :style="clockStyle">
 				</div>
 				<div class="tip">
-						<input type="checkbox"  class="checkbox" checked/>
+						<input type="checkbox"  class="checkbox" v-model="checked"/>
 						<span>我已阅读</span><span style="color:#00AAEE" @click="optiondetail">《使用说明》</span>
 				</div>
 			</div>
@@ -36,11 +36,17 @@ export default {
 				},
 				 tips:"",
 				 showss:false,
-				 callbackcode:""
+				 callbackcode:"",
+				 checked:true
     }
 	},
   methods:{
 		regist(){
+				if (!this.checked){
+						this.tips ="请确定已阅读使用说明"
+						this.showTips()
+						return
+				}
 			  if(!this.phone || !this.code){
 					this.tips ="请填写完整"
 					this.showTips()
@@ -53,7 +59,7 @@ export default {
 				} 
 				if(this.code!==this.callbackcode){
 						// 验证码错误
-						this.tips = "验证码错误"
+						this.tips = "输入验证码有误"
 						this.showTips()
 						return
 				}
@@ -78,7 +84,8 @@ export default {
 										that.$router.push({path:"/login"})
 								})
 						}else{
-								that.tips = "注册失败，请重新注册"
+							  if (res.data.message==="手机号已经注册")
+								that.tips = "此手机号已经注册，请重新注册"
 								that.showTips()
 						}
 					}).catch((err)=>{

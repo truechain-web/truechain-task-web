@@ -324,7 +324,6 @@ export default {
     } else if (this.type == "myTask") {
       this.getUserTaskInfo();
     } else  {
-      console.log(777)
       this.getDetail();        
     }
   }
