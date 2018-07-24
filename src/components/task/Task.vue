@@ -16,8 +16,9 @@
         </ul>
         <div class="space space_"></div>
       </div>
-      <div class="list border-bottom" ref="wrapper">
-        <div>
+      <div ref="wrapper" class="list border-bottom" >
+        <div >
+        
           <div class="item  border-bottom" v-for="(item,index) of TaskList" :key="index">
             <div class="left" :class="{teamMark:item.isTeam}">
               <img :src="item.iconPath" alt="" class="tackImg" />
@@ -86,6 +87,9 @@
       }
     },
     methods: {
+      dianji(){
+        console.log('909090')
+      },
     	clickTab(){
 	      this.reload()
 	    },
@@ -122,6 +126,7 @@
             console.log(res.data.code,'000000000000000000000000000000000000')
             const data = res.data.result
             const dataList = data.taskList
+            this.TaskList = data.taskList
             dataList.forEach(function(list) {
               if(list.taskStatus === 0) {
                 list.taskStatus = '进行中'
@@ -136,7 +141,7 @@
                  list.isTeam=true
                 }
             })
-            this.TaskList = data.taskList
+            
           }
         })
         this.active = index
@@ -154,6 +159,7 @@
               }
               const data = res.data.result
               const dataList = data.taskList
+              this.TaskList = data.taskList
               dataList.forEach(function(list) {
                 if(list.taskStatus === 0) {
                   list.taskStatus = '进行中'
@@ -167,7 +173,7 @@
                  list.isTeam=true
                 }
               })
-              this.TaskList = data.taskList
+              
               this.navs[0].num = data.taskTotal
               this.navs[1].num = data.taskingTotal
               this.navs[2].num = data.taskComplateTolal
@@ -181,7 +187,7 @@
       },
 
       _initScroll() {
-        this.scroll = new Bscroll(this.$refs.wrapper)
+          this.scroll = new Bscroll(this.$refs.wrapper,{click: true})
       }
     },
     mounted() {
@@ -189,6 +195,7 @@
 //      this.getAllTask()
 //    }, 1000)
    this.getAllTask()
+   
     },
     watch: {
       TaskList(a) {

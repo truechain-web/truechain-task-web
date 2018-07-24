@@ -8,7 +8,7 @@
 			<div class="space"></div>
 		</div> -->
     <div v-show="this.token">
-      <div class="header" v-if="unComplete">
+      <div class="header" v-if="unComplete" >
         <div class="left">
           <img src="../../assets/img/user.png" alt="" class="userImg" />
           <div class="userRank">
@@ -21,12 +21,12 @@
           </div>
         </div>
       </div>
-      <div class="header" v-if="!unComplete">
+      <div class="header" v-if="!unComplete" >
         <div class="left">
           <img src="../../assets/img/user.png" alt="" class="userImg" />
           <div class="userRank">
             <p class="name" v-text="wxNickName"></p>
-            <p class="rank">等级：<span>{{level}}</span></p>
+            <p class="rank">等级：<span v-if="level">{{level}}</span></p>
           </div>
         </div>
         <router-link to="recommend">
@@ -37,7 +37,7 @@
         </router-link>
       </div>
       <div class="space"></div>
-      <div v-if="!unComplete">
+      <div v-if="!unComplete"  >
         <ul class="navBar">
           <li class="item border-right" @click="tabs(index)" v-for="(item,index) of navs" :class="{active:active==index}">
             <span class="num" v-text="item.num"><span class="unit">个</span></span>
@@ -47,7 +47,7 @@
         <div class="space space_"></div>
       </div>
 
-      <div class="tabCon" ref="wrapper" v-if="!unComplete">
+      <div class="tabCon" ref="wrapper" v-if="!unComplete" >
         <div>
 
           <div class="tabConWrapper border-bottom" v-for='(itemCon,index) in tabContents'>
@@ -55,7 +55,7 @@
               <p class="type">{{itemCon.rewardResource}}收入</p>
               <p class="date">{{itemCon.createTime}}</p>
             </div>
-            <div class="contRight"><span v-if="itemCon.reward">+</span>{{itemCon.reward}}</div>
+            <div class="contRight"><span v-if="itemCon.rewardNum">+</span>{{itemCon.rewardNum}}</div>
           </div>
         </div>
 
@@ -66,7 +66,7 @@
       	请先登录
       </div>
     </router-link>
-    <tabs @clickTab="clickTab"></tabs>
+    <tabs ></tabs>
   </div>
 </template>
 
@@ -164,8 +164,10 @@
         })
       },
       getIncomeInfo() {
+        
         let token = localStorage.getItem("token");
         this.token = token
+        console.log(this.token)
         let url = 'http://www.phptrain.cn/api/user/getUserInfo?rewardType=1'
         if(this.token) {
           this.$http.get(url).then((res) => {
@@ -225,6 +227,7 @@
 </script>
 
 <style scoped lang="less">
+
   .space {
     background: #eee;
     height: 10px;

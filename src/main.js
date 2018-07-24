@@ -8,6 +8,10 @@ import axios from "axios"
 import "./assets/css/reset.css"
 import './assets/css/iconfont.css'
 import './assets/css/border.css'
+import VueLazyload from 'vue-lazyload'
+Vue.use(VueLazyload, {
+  loading: './assets/img/task-logo.png'
+})
 router.beforeEach((to, from, next) => {
   /* 路由发生变化修改页面title */
   if (to.meta.title) {

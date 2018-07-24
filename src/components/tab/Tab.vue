@@ -1,7 +1,7 @@
 <template>
   <div>
     <footer class="footer border-top">
-      <router-link to="/List" tag="div" class="tab-item" @click.native="flushCom">
+      <router-link to="/list" tag="div" class="tab-item" @click.native="flushCom">
           <span class="iconfont ">&#xe76a;</span>
           <p class="name">任务列表</p>
       </router-link>

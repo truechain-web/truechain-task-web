@@ -1,5 +1,5 @@
 <template>
-  <div id="app">
+  <div id="app" v-cloak>
     <!--<keep-alive>-->
       <!-- <router-view />-->
     <!--</keep-alive>-->
@@ -39,5 +39,9 @@ export default {
   -moz-osx-font-smoothing: grayscale;
   /*text-align: center;*/
   color: #2c3e50;
+}
+[v-cloak] {
+   display:none!important;
+
 }
 </style>
