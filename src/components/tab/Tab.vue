@@ -21,11 +21,24 @@
 <script>
   export default {
     name: 'Tabs',
+    data(){
+      return{
+        
+      }
+    },
     methods:{
 　　　　flushCom(){
 					this.$emit('clickTab')
 			}
-　　}
+
+　　},
+watch: {
+      $route(to, from) {
+        console.log(to);
+        console.log(from);
+      }
+    }
+
   }
 </script>
 

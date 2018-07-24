@@ -244,7 +244,6 @@ export default {
         });
     },
     commit() {
-      
       let id = this.$router.history.current.params.id;
       if(!this.commitAddress){
         this.tips = "请输入提交地址 ";
