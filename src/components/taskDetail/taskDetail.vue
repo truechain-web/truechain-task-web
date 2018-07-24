@@ -57,7 +57,8 @@
                 <!-- <div class="four" v-if="!localStorage.token" to="/Login">注册</div>  -->
             </div>
             <div class="bottom" >
-                <div class='button one' @click="holdTask"  v-if="data.task.category=='0'">抢任务</div>
+                <div class='button one' @click="holdTask"  v-if="data.task.category=='0' && data.isFull!='1' ">抢任务</div>
+                <div class='button four' @click="holdTask"  v-if="data.isFull=='1'">已满</div>
                 <div class='button two' @click="recommend">推荐转发</div>                
             </div>            
         </div>
@@ -138,6 +139,7 @@ export default {
           if (res.data.message === "成功") {
             if (res.data.result) {
               this.data = res.data.result;
+              console.log(this.data)
             }
           } else {
             this.tips = res.data.message;
@@ -161,6 +163,8 @@ export default {
           if (res.data.message === "成功") {
             if (res.data.result) {
               this.data = res.data.result;
+              console.log(this.data)
+              
             }
           } else {
             this.tips = res.data.message;
