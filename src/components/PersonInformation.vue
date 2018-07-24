@@ -9,7 +9,7 @@
 						  <input class="inp" type="text" placeholder="姓名" v-model="uname">
 						  <input class="inp" type="text" placeholder="微信昵称" v-model="wechatName">
 						
-								<input class="inp" type="text" placeholder="微信号" v-model="wechatId">
+								<!-- <input class="inp" type="text" placeholder="微信号" v-model="wechatId"> -->
 								<!-- <input class="inpx-r" type="button" value="获取" @click="getWeChatId"> -->
 						
 							<input class="inp" type="text" placeholder="钱包地址" v-model="address">
@@ -119,7 +119,7 @@
 						return
 				}
 				 var that = this
-				 if(this.uname && this.wechatName && this.wechatId && this.address && this.file){
+				 if(this.uname && this.wechatName  && this.address && this.file){
 					    // if(this.code!==this.callbackcode){
 							// 	 // 验证码错误
 							// 	 	that.tips = "验证码错误"
@@ -128,9 +128,9 @@
 							// }
 								var param = new FormData()
 								param.append("file",that.file)
-								param.append("name",that.wechatName)
-								param.append("wxNickName",that.wechatId)
-								param.append("wxNum",that.uname)
+								param.append("name",that.uname)
+								param.append("wxNickName",that.wechatName)
+								// param.append("wxNum",that.uname)
 								param.append("trueChainAddress",that.address)
 								param.append("userId",that.userId)
 								// 将内容发送到接口
