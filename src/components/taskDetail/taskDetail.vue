@@ -58,7 +58,7 @@
             </div>
             <div class="bottom" >
                 <div class='button one' @click="holdTask"  v-if="data.task.category=='0' && data.isFull!='1' ">抢任务</div>
-                <div class='button four' @click="holdTask"  v-if="data.isFull=='1'">已满</div>
+                <div class='button four'   v-if="data.isFull=='1'" >已满</div>
                 <div class='button two' @click="recommend">推荐转发</div>                
             </div>            
         </div>
@@ -244,15 +244,15 @@ export default {
         });
     },
     commit() {
-      let id = this.$router.history.current.params.id;
+      let taskDetailId = this.$router.history.current.params.taskDetailId;
       if(!this.commitAddress){
         this.tips = "请输入提交地址 ";
         this.showTips();
         return
       }
-      let url = "http://www.phptrain.cn/api/task/commitUserTask?taskId=" + id;
+      let url = "http://www.phptrain.cn/api/task/commitUserTask?taskDetailId=" + taskDetailId;
       var param = {
-        taskId: id,
+        taskDetailId: taskDetailId,
         commitAddress: this.commitAddress,
         remark: this.remark
       };

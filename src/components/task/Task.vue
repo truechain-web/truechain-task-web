@@ -98,11 +98,11 @@
         this.$router.go(-1)
       },
       taskClick(item) {
-        console.log('000')
         this.$router.push({
           name: "TaskDetail",
           params: {
             id: item.id,
+            taskDetailId:item.taskDetailId,
             buttonText: item.buttonText,
             type: 'myTask'
           }
