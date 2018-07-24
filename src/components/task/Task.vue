@@ -110,8 +110,9 @@
         } else if(index === 2) {
           status = 1
         } else {
+          this.getAllTask()
           status = 2
-        this.getAllTask()
+        
         }
         if(status !== 2) {
           param.append("taskStatus", status)
