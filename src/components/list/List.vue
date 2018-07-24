@@ -23,7 +23,7 @@
                   </div>
                 </div>
                 <div class="center">{{item.rewardNum}}True</div>
-                <div class="right"  @click="buttonClick(item.id)" >抢任务</div>
+                <div class="right"  @click="buttonClick(item)" >抢任务</div>
               </div>
              
           </div>
@@ -178,7 +178,10 @@ import Bscroll from 'better-scroll'
         this.hasData=false
         this.getTaskInfo()
       },
-      buttonClick (id){
+      buttonClick (item){
+        console.log(999)
+        console.log(item)
+        let id =item.id
         this.$router.push({name:"TaskDetail",params:{id:id,type:'robTask'}})
       },
       hanleSelectTack(type) {

@@ -112,11 +112,11 @@ export default {
     getLoginUser() {
       let url = "http://www.phptrain.cn/api/user/getLoginUser";
       this.$http.get(url).then(res => {
-        if (res.data.code && res.data) {
-          if (res.data.result.auditStatus ) {
-            this.unComplete = res.data.result.auditStatus
+        if (res.data.message === "成功") {
+            if (res.data.result) {
+               this.unComplete = res.data.result.auditStatus
+            }
           }  
-        }
       });
     },
     goback() {
@@ -139,7 +139,6 @@ export default {
           if (res.data.message === "成功") {
             if (res.data.result) {
               this.data = res.data.result;
-              console.log(this.data)
             }
           } else {
             this.tips = res.data.message;
@@ -163,7 +162,6 @@ export default {
           if (res.data.message === "成功") {
             if (res.data.result) {
               this.data = res.data.result;
-              console.log(this.data)
               
             }
           } else {
@@ -214,10 +212,10 @@ export default {
       //   return;
       // }
 
-      let id = this.$router.history.current.params.id;
+      let id = this.data.taskDetailList[0].id
       if (item.id) {
         id = item.id;
-      }
+      } 
       let url = "http://www.phptrain.cn/api/task/holdTask?taskDetailId=" + id;
       var param = {
         taskDetailId: id
@@ -332,7 +330,7 @@ export default {
     }
   },
   mounted() {
-    this.getLoginUser();
+    this.getLoginUser()
 
     this.type = this.$router.history.current.params.type;
     this.buttonText = this.$router.history.current.params.buttonText;
