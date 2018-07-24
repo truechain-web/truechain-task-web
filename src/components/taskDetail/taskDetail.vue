@@ -250,7 +250,7 @@ export default {
         this.showTips();
         return
       }
-      let url = "http://www.phptrain.cn/api/task/commitUserTask?taskDetailId=" + taskDetailId;
+      let url = "http://www.phptrain.cn/api/task/commitUserTask";
       var param = {
         taskDetailId: taskDetailId,
         commitAddress: this.commitAddress,
