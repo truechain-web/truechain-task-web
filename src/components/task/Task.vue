@@ -111,13 +111,14 @@
           status = 1
         } else {
           status = 2
-          this.getAllTask()
+        this.getAllTask()
         }
         if(status !== 2) {
           param.append("taskStatus", status)
         }
         this.$http.post(url, param).then((res) => {
           if(res.data.code && res.data) {
+            console.log(res.data.code,'000000000000000000000000000000000000')
             const data = res.data.result
             const dataList = data.taskList
             dataList.forEach(function(list) {
@@ -134,7 +135,7 @@
                  list.isTeam=true
                 }
             })
-            this.TaskList = dataList
+            this.TaskList = data.taskList
           }
         })
         this.active = index
@@ -142,7 +143,6 @@
       getAllTask() {
         let token = localStorage.getItem("token");
         this.token = token
-        console.log(this.token)
         if(this.token) {
           let url = "http://www.phptrain.cn/api/task/getUserTaskList"
           this.$http.post(url).then((res) => {
@@ -166,7 +166,7 @@
                  list.isTeam=true
                 }
               })
-              this.TaskList = dataList
+              this.TaskList = data.taskList
               this.navs[0].num = data.taskTotal
               this.navs[1].num = data.taskingTotal
               this.navs[2].num = data.taskComplateTolal
@@ -183,7 +183,7 @@
         this.scroll = new Bscroll(this.$refs.wrapper)
       }
     },
-    created() {
+    mounted() {
 //    setTimeout(() => {
 //      this.getAllTask()
 //    }, 1000)

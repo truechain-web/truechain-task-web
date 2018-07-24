@@ -95,10 +95,12 @@ import Bscroll from 'better-scroll'
 				this.pageIndex=1
 				this.totalPages=1
 				this.pullup=true
+				console.log(this.taskCategory,this.taskType,this.taskSort)
 				if(this.taskCategory!==2){
 				  param.append("category",this.taskCategory)
 				}
 				if(this.taskType!==''){
+				  
           param.append("level",this.taskType)
         }
 				if(this.taskSort!==''){
@@ -186,26 +188,29 @@ import Bscroll from 'better-scroll'
         if(type === "A级"){
            grade = "A"
            this.taskType="A"
+           this.taskCategory=2
         }else if (type === "B级"){
           
           grade = "B"
           this.taskType="B"
+          this.taskCategory=2
           
         }else if (type === "C级"){
           
           grade = "C"
           this.taskType="C"
+          this.taskCategory=2
           
         }
         else if (type === "个人"){
-          
           category = 0
           this.taskCategory=0
+          this.taskType=''
         }
         else if (type === "团队"){
-         
           category =1
           this.taskCategory=1
+          this.taskType=''
           
         }
         else if (type === "奖励升序"){

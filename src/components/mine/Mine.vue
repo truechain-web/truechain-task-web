@@ -55,7 +55,7 @@
               <p class="type">{{itemCon.rewardResource}}收入</p>
               <p class="date">{{itemCon.createTime}}</p>
             </div>
-            <div class="contRight">+{{itemCon.reward}}</div>
+            <div class="contRight"><span v-if="itemCon.reward">+</span>{{itemCon.reward}}</div>
           </div>
         </div>
 
@@ -169,7 +169,7 @@
         let url = 'http://www.phptrain.cn/api/user/getUserInfo?rewardType=1'
         if(this.token) {
           this.$http.get(url).then((res) => {
-          	console.log(res.data)
+          	console.log(res.data,'00000')
             const result = res.data.result
             this.level = result.user.level
 						this.mobile=result.user.mobile            

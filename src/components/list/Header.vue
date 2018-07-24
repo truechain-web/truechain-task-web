@@ -33,13 +33,13 @@
       <div style="height: 50px;"></div>
     </scroll>
     <ul class="select-wrapper" v-show="showList[0]">
-      <li class="border-bottom select-item"  v-for="(item,index) of itemList1" :key="item.id" @click="handleClick(index,item.name,1)" :class="{ active1: active1==index }">{{item.name}}</li>
+      <li class="border-bottom select-item"  v-for="(item,index) of itemList1" :key="item.id" @click="handleClick(index,item.name,1)" >{{item.name}}</li>
     </ul>
      <ul class="select-wrapper" v-show="showList[1]">
-      <li class="border-bottom select-item"  v-for="(item,index) of itemList2" :key="item.id" @click="handleClick(index,item.name,2)" :class="{ active2: active2==index }">{{item.name}}</li>
+      <li class="border-bottom select-item"  v-for="(item,index) of itemList2" :key="item.id" @click="handleClick(index,item.name,2)" >{{item.name}}</li>
     </ul>
      <ul class="select-wrapper" v-show="showList[2]">
-      <li class="border-bottom select-item"  v-for="(item,index) of itemList3" :key="item.id" @click="handleClick(index,item.name,3)" :class="{ active3: active3==index }">{{item.name}}</li>
+      <li class="border-bottom select-item"  v-for="(item,index) of itemList3" :key="item.id" @click="handleClick(index,item.name,3)" >{{item.name}}</li>
     </ul>
     <div class="mask" v-show="showMask">
     </div>
@@ -66,9 +66,6 @@
         lastItemIndex: -1, //是否第一次点击下拉
         keyword: "", //搜索框关键字
         timer: null,
-        active1: 0,
-        active2: 0,
-        active3: 0,
         showMask: false,
         pageIndex: 1,
         pageSize: 20,
@@ -194,21 +191,21 @@
         this.showList=[false,false,false]
         
         this.keyword = ''
+        this.scrollTo()
       },
       //点击下拉选项发送所点击的文字到父级
       handleClick(index,name,type) {
-        
-        if(type==1){
-          this.active1 = index
-        
-        }
-        else if(type==2){
-          this.active2 = index
-        }
-        else{
-          this.active3 = index
-          this.$emit("change", name)
-        }
+//      if(type==1){
+//        this.active1 = index
+//      
+//      }
+//      else if(type==2){
+//        this.active2 = index
+//      }
+//      else{
+//        this.active3 = index
+//        this.$emit("change", name)
+//      }
         this.showMask = false;
         this.isActive = true
         this.showList=[false,false,false]

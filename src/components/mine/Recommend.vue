@@ -14,7 +14,7 @@
               <p class="type">{{itemCon.personName}}</p>
               <p class="date">{{itemCon.createTime}}</p>
             </div>
-            <div class="contRight">+{{itemCon.reward}}</div>
+            <div class="contRight"><span v-if="itemCon.reward">+</span>{{itemCon.reward}}</div>
            </div>
         </div>
         <div class="loading-container" v-show="hasCode">
@@ -49,6 +49,7 @@ import Loading from '../../base/loading/Loading'
              if(res.data.code){
               this.hasCode=false
             }
+             console.log(res)
               this.recommendCons=res.data.result
            }
         })
