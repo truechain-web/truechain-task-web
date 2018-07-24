@@ -28,7 +28,8 @@
               </div>
             </div>
             <div class="center">{{item.taskStatus}}</div>
-            <div class="right" @click="buttonClick(item)">{{item.buttonText}}</div>
+          
+            <div class="right"  @click=" taskClick(item)">{{item.buttonText}}</div>
           </div>
         </div>
         <div class="loading-container" v-show="hasCode">
@@ -96,7 +97,8 @@
       goback() {
         this.$router.go(-1)
       },
-      buttonClick(item) {
+      taskClick(item) {
+        console.log('000')
         this.$router.push({
           name: "TaskDetail",
           params: {
@@ -123,7 +125,6 @@
         }
         this.$http.post(url, param).then((res) => {
           if(res.data.code && res.data) {
-            console.log(res.data.code,'000000000000000000000000000000000000')
             const data = res.data.result
             const dataList = data.taskList
             this.TaskList = data.taskList
@@ -152,7 +153,6 @@
         if(this.token) {
           let url = "http://www.phptrain.cn/api/task/getUserTaskList"
           this.$http.post(url).then((res) => {
-            console.log(res)
             if(res.data.code && res.data) {
               if(res.data.code) {
                 this.hasCode = false
