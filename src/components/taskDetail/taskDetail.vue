@@ -68,7 +68,11 @@
             <p><i>提交地址：</i>{{data.taskCompleteInfo.pushAddress}} </p>
             <p><i>说&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 明：</i>{{data.taskCompleteInfo.remark}} </p>
             <p><i>审核结果：</i>{{data.taskCompleteInfo.auditResult}}  </p>
-            <p><i>奖励收入：</i>{{data.taskCompleteInfo.reward}} </p>          
+            <p><i>奖励收入：</i>{{data.taskCompleteInfo.reward}}
+                <span v-if="this.rewardType=='1'">true</span>
+                <span v-if="this.rewardType=='2'">ttr</span>
+                <span v-if="this.rewardType=='3'">rmp</span> 
+             </p>          
         </div>
         <!-- 未完成待提交 -->
         <div class="bottom" v-if="type==='myTask' && buttonText =='提交' ">
@@ -105,6 +109,7 @@ export default {
       tips: "",
       commitAddress: "",
       remark: "",
+      rewardType:'', //钱的种类
       unComplete: "" // 0-未提交，信息不完整，1-审核完成，-1 - 提交了未审核
     };
   },
@@ -147,10 +152,10 @@ export default {
         });
     },
     getUserTaskInfo() {
-      let id = this.$router.history.current.params.id;
-      let url = "http://www.phptrain.cn/api/task/getUserTaskInfo?taskId=" + id;
+       let taskDetailId = this.$router.history.current.params.taskDetailId;
+      let url = "http://www.phptrain.cn/api/task/getUserTaskInfo?taskDetailId=" + taskDetailId;
       var param = {
-        taskId: id
+        taskDetailId: taskDetailId
       };
       this.$http
         .post(url, param, {
@@ -203,14 +208,6 @@ export default {
         this.showTips();
         return
       }
-
-      // if (item && item.isLevelEnough === "0") {
-      //   console.log(1111)
-      //   this.tips =
-      //     "您的开发评级为：" + item.userlevel + "，请选择符合您开发等级的任务";
-      //   this.showTips();
-      //   return;
-      // }
 
       let id = this.data.taskDetailList[0].id
       if (item.id) {
@@ -330,7 +327,7 @@ export default {
   },
   mounted() {
     this.getLoginUser()
-
+    this.rewardType = this.$router.history.current.params.rewardType;
     this.type = this.$router.history.current.params.type;
     this.buttonText = this.$router.history.current.params.buttonText;
     if (this.type == "robTask") {

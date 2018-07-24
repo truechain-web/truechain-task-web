@@ -179,10 +179,9 @@ import Bscroll from 'better-scroll'
         this.getTaskInfo()
       },
       buttonClick (item){
-        console.log(999)
-        console.log(item)
         let id =item.id
-        this.$router.push({name:"TaskDetail",params:{id:id,type:'robTask'}})
+        let rewardType = item.rewardType
+        this.$router.push({name:"TaskDetail",params:{id:id,type:'robTask',rewardType:rewardType}})
       },
       hanleSelectTack(type) {
         let grade = '';

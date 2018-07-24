@@ -88,9 +88,6 @@
       }
     },
     methods: {
-      dianji(){
-        console.log('909090')
-      },
     	clickTab(){
 	      this.reload()
 	    },
@@ -98,13 +95,16 @@
         this.$router.go(-1)
       },
       taskClick(item) {
+        console.log('task')
+        console.log(item)
         this.$router.push({
           name: "TaskDetail",
           params: {
             id: item.id,
             taskDetailId:item.taskDetailId,
             buttonText: item.buttonText,
-            type: 'myTask'
+            type: 'myTask',
+            rewardType:item.rewardType
           }
         })
       },
