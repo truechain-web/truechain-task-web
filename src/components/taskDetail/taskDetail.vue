@@ -346,16 +346,14 @@ export default {
   position: absolute;
   background-color: #00aaee;
   color: white;
-  text-align: left;
+  text-align: center;
   width: 200px;
   padding: 20px 20px;
-  // height: 50px;
-  // line-height: 50px;
   word-break:break-all;
   left: 50%;
-  top: 50%;
+  top: 50%;  
   margin-left: -100px;
-  margin-top: -120px;
+  // margin-top: -120px;
   border-radius: 5px;
 }
 .space {
