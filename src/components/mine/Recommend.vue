@@ -14,7 +14,7 @@
               <p class="type">{{itemCon.personName}}</p>
               <p class="date">{{itemCon.createTime}}</p>
             </div>
-            <div class="contRight"><span v-if="itemCon.reward">+</span>{{itemCon.reward}}</div>
+            <div class="contRight"><span v-if="itemCon.rewardNum">+</span>{{itemCon.rewardNum}}</div>
            </div>
         </div>
         <div class="loading-container" v-show="hasCode">

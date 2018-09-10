@@ -68,7 +68,7 @@
             <p><i>提交地址：</i>{{data.taskCompleteInfo.pushAddress}} </p>
             <p><i>说&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 明：</i>{{data.taskCompleteInfo.remark}} </p>
             <p><i>审核结果：</i>{{data.taskCompleteInfo.auditResult}}  </p>
-            <p><i>奖励收入：</i>{{data.taskCompleteInfo.reward}}
+            <p><i>奖励收入：</i>{{data.taskCompleteInfo.rewardNum}}
                 <span v-if="this.rewardType=='1'">true</span>
                 <span v-if="this.rewardType=='2'">ttr</span>
                 <span v-if="this.rewardType=='3'">rmp</span> 

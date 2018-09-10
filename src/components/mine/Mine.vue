@@ -1,19 +1,19 @@
 <template>
   <div>
     <!-- <div class="header-top">
-			<div class="header-wrapper">
-				<div class="img-wrapper" @click="goback"><img src="../../assets/img/back.png" alt="" /></div>
-				<div>个人中心</div>
-			</div>
-			<div class="space"></div>
-		</div> -->
+      <div class="header-wrapper">
+        <div class="img-wrapper" @click="goback"><img src="../../assets/img/back.png" alt="" /></div>
+        <div>个人中心</div>
+      </div>
+      <div class="space"></div>
+    </div> -->
     <div v-show="this.token">
       <div class="header" v-if="unComplete" >
         <div class="left">
           <img src="../../assets/img/user.png" alt="" class="userImg" />
           <div class="userRank">
          
-          	 <p class="name"><span  v-text="mobile"></span><span class="identity">（游客）</span></p>
+             <p class="name"><span  v-text="mobile"></span><span class="identity">（游客）</span></p>
          
            <router-link :to="{path :'/personInformation',query: {userid: userId}}">
             <p class="addInfo">完善个人信息</p>
@@ -63,7 +63,7 @@
     </div>
     <router-link to="Login">
       <div v-show="this.token===null" class="login-text">
-      	请先登录
+        请先登录
       </div>
     </router-link>
     <tabs ></tabs>
@@ -120,9 +120,9 @@
 
     },
     methods: {
-    	clickTab(){
-	      this.reload()
-	    },
+      clickTab(){
+        this.reload()
+      },
       goback() {
         this.$router.go(-1)
       },
@@ -171,13 +171,13 @@
         let url = 'http://www.phptrain.cn/api/user/getUserInfo?rewardType=1'
         if(this.token) {
           this.$http.get(url).then((res) => {
-          	console.log(res.data,'00000')
+            console.log(res.data,'00000')
             const result = res.data.result
             this.level = result.user.level
-						this.mobile=result.user.mobile            
+            this.mobile=result.user.mobile            
             this.userId=result.user.id
             if(result.user.auditStatus==0){
-            	this.unComplete=true
+              this.unComplete=true
             }
             
             this.recommendPeople = result.recommendPeople
