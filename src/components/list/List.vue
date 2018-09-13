@@ -56,10 +56,13 @@
       Scroll
     },
     created() {
+      console.log(2345)
+      console.log(this.$router)
       this.listenScroll = true
     },
     data() {
       return {
+        userUid:'',
         taskType: '',
         taskList: [], //原始列表
         tempTaskList: [], //临时列表
@@ -97,7 +100,6 @@
         this.pageIndex = 1
         this.totalPages = 1
         this.pullup = true
-        console.log(this.taskCategory, this.taskType, this.taskSort)
         if(this.taskCategory !== 2) {
           param.append("category", this.taskCategory)
         }
@@ -178,14 +180,17 @@
         this.getTaskInfo()
       },
       buttonClick(item) {
+        
         let id = item.id
         let rewardType = item.rewardType
+        
         this.$router.push({
           name: "TaskDetail",
           params: {
             id: id,
             type: 'robTask',
-            rewardType: rewardType
+            rewardType: rewardType,
+            userUid:this.userUid
           }
         })
       },
@@ -291,6 +296,7 @@
       setTimeout(() => {
         this.getTaskInfo()
       }, 1000)
+      this.userUid=this.$router.history.current.params.userUid
     },
     created() {
 

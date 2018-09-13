@@ -97,6 +97,7 @@ export default {
   },
   data() {
     return {
+      userUid:'',
       data: {
         task: {
           // iconPath:'http://img1.qunarzz.com/piao/fusion/1710/a6/83f636bd75ae6302.png'
@@ -201,7 +202,10 @@ export default {
         this.showTips();
         var _this = this;
         setTimeout(function() {
-          _this.$router.push({ path: "/personinformation" });
+          _this.$router.push({ name: "PersonInformation" ,params: {
+            userUid: _this.userUid,
+           
+          }});
         }, 2000);
         return;
       } else if (this.unComplete == "-1") {
@@ -327,6 +331,7 @@ export default {
     }
   },
   mounted() {
+    this.userUid=this.$router.history.current.params.userUid
     this.getLoginUser();
     this.rewardType = this.$router.history.current.params.rewardType;
     this.type = this.$router.history.current.params.type;

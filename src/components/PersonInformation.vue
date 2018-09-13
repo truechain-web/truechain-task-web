@@ -126,6 +126,7 @@
 							// 		that.showTips()
 							// 	 return
 							// }
+							console.log(that.userId)
 								var param = new FormData()
 								param.append("file",that.file)
 								param.append("name",that.uname)
@@ -198,7 +199,15 @@
 			}
 		},
 		mounted(){
-			 this.userId = this.$route.query.userid
+			console.log(12344)
+			 if(this.$route.query.userid ){
+			 	this.userId = this.$route.query.userid 
+			 }
+			 if(this.$route.params.userUid){
+				 this.userId = this.$route.params.userUid 
+			 }
+			console.log(this.userId)
+			 
 		}
 	}
 </script>

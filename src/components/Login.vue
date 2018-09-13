@@ -81,11 +81,13 @@ export default {
 						 this.tips ="登录成功.即将跳转"
 						 this.showTips()
 						 let token = JSON.stringify(res.data.result)
+						 let userUid = res.data.result.userUid
 						 localStorage.setItem("token",token)
 						 this.$http.post("http://www.phptrain.cn/api/task/getUserTaskList").then(res=>{
-							  console.log(res)
+							 
 						 })
-						 this.$router.push({name:"List"})
+						 this.$router.push({name:"List",params:{userUid:userUid}})
+						
 					}else{
 						if(res.data.message==="该用户不存在"){
 							this.tips ="该账号尚未注册"
