@@ -109,7 +109,7 @@ export default {
       tips: "",
       commitAddress: "",
       remark: "",
-      rewardType:'', //钱的种类
+      rewardType: "", //钱的种类
       unComplete: "" // 0-未提交，信息不完整，1-审核完成，-1 - 提交了未审核
     };
   },
@@ -118,10 +118,10 @@ export default {
       let url = "http://www.phptrain.cn/api/user/getLoginUser";
       this.$http.get(url).then(res => {
         if (res.data.message === "成功") {
-            if (res.data.result) {
-               this.unComplete = res.data.result.auditStatus
-            }
-          }  
+          if (res.data.result) {
+            this.unComplete = res.data.result.auditStatus;
+          }
+        }
       });
     },
     goback() {
@@ -152,8 +152,10 @@ export default {
         });
     },
     getUserTaskInfo() {
-       let taskDetailId = this.$router.history.current.params.taskDetailId;
-      let url = "http://www.phptrain.cn/api/task/getUserTaskInfo?taskDetailId=" + taskDetailId;
+      let taskDetailId = this.$router.history.current.params.taskDetailId;
+      let url =
+        "http://www.phptrain.cn/api/task/getUserTaskInfo?taskDetailId=" +
+        taskDetailId;
       var param = {
         taskDetailId: taskDetailId
       };
@@ -167,7 +169,6 @@ export default {
           if (res.data.message === "成功") {
             if (res.data.result) {
               this.data = res.data.result;
-              
             }
           } else {
             this.tips = res.data.message;
@@ -195,7 +196,7 @@ export default {
         }, 1500);
         return;
       }
-      if (this.unComplete =='0') {
+      if (this.unComplete == "0") {
         this.tips = "请先完善个人信息";
         this.showTips();
         var _this = this;
@@ -203,16 +204,16 @@ export default {
           _this.$router.push({ path: "/personinformation" });
         }, 2000);
         return;
-      } else if(this.unComplete =='-1'){
+      } else if (this.unComplete == "-1") {
         this.tips = "用户信息审核中暂不可抢任务";
         this.showTips();
-        return
+        return;
       }
 
-      let id = this.data.taskDetailList[0].id
+      let id = this.data.taskDetailList[0].id;
       if (item.id) {
         id = item.id;
-      } 
+      }
       let url = "http://www.phptrain.cn/api/task/holdTask?taskDetailId=" + id;
       var param = {
         taskDetailId: id
@@ -242,10 +243,10 @@ export default {
     },
     commit() {
       let taskDetailId = this.$router.history.current.params.taskDetailId;
-      if(!this.commitAddress){
+      if (!this.commitAddress) {
         this.tips = "请输入提交地址 ";
         this.showTips();
-        return
+        return;
       }
       let url = "http://www.phptrain.cn/api/task/commitUserTask";
       var param = {
@@ -278,8 +279,8 @@ export default {
       this.showTips();
       let us = location.href.split("#")[0];
       let url = "http://www.phptrain.cn/api/unauth/weixin/getWxSign";
-			var param = new FormData();
-			var that = this
+      var param = new FormData();
+      var that = this;
       param.append("url", us);
       this.$http.post(url, param, {}).then(res => {
         if (res.data.code === 200) {
@@ -293,22 +294,22 @@ export default {
           });
           wx.ready(function() {
             wx.onMenuShareAppMessage({
-							title: that.data.task.name, // 分享标题
-							desc:that.data.task.description,
+              title: that.data.task.name, // 分享标题
+              desc: that.data.task.description,
               link: us, // 分享链接，该链接域名或路径必须与当前页面对应的公众号JS安全域名一致
               imgUrl: that.data.task.iconPath, // 分享图标
               success: function() {
                 // 用户点击了分享后执行的回调函数
                 alert("分享微信好友成功");
-							},
-							cancel: function() {
+              },
+              cancel: function() {
                 // 用户取消分享后执行的回调函数
                 alert("取消分享");
               }
             });
             wx.onMenuShareQQ({
-             	title: that.data.task.name, // 分享标题
-							desc:that.data.task.description,
+              title: that.data.task.name, // 分享标题
+              desc: that.data.task.description,
               link: us, // 分享链接，该链接域名或路径必须与当前页面对应的公众号JS安全域名一致
               imgUrl: that.data.task.iconPath, // 分享图标
               success: function() {
@@ -326,7 +327,7 @@ export default {
     }
   },
   mounted() {
-    this.getLoginUser()
+    this.getLoginUser();
     this.rewardType = this.$router.history.current.params.rewardType;
     this.type = this.$router.history.current.params.type;
     this.buttonText = this.$router.history.current.params.buttonText;
@@ -349,11 +350,11 @@ export default {
   text-align: center;
   width: 200px;
   padding: 20px 20px;
-  word-break:break-all;
+  word-break: break-all;
   left: 50%;
-  top: 50%;  
+  top: 70%;
   margin-left: -100px;
-  // margin-top: -120px;
+  // margin-top: 20px;
   border-radius: 5px;
 }
 .space {
